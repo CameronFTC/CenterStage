@@ -549,7 +549,7 @@ public class TrajectorySequenceBuilder {
     private List<SequenceSegment> projectGlobalMarkersToLocalSegments(List<TrajectoryMarker> markers, List<SequenceSegment> sequenceSegments) {
         if (sequenceSegments.isEmpty()) return Collections.emptyList();
 
-        markers.sort(Comparator.comparingDouble(TrajectoryMarker::getTime));
+        //markers.sort(Comparator.comparingDouble(TrajectoryMarker::getTime));
 
         int segmentIndex = 0;
         double currentTime = 0;
