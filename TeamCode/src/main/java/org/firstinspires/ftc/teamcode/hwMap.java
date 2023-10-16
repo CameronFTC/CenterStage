@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -45,37 +47,40 @@ public class hwMap {
         bL = opmode.hardwareMap.get(DcMotor.class, "bL");
         bR = opmode.hardwareMap.get(DcMotor.class, "bR");
 
-        lift = opmode.hardwareMap.get(DcMotor.class, "lift");
-        lift2 = opmode.hardwareMap.get(DcMotor.class, "lift2");
+        //lift = opmode.hardwareMap.get(DcMotor.class, "lift");
+        //lift2 = opmode.hardwareMap.get(DcMotor.class, "lift2");
 
         liftEncoderGlobal = 0;
 
-        tilt = opmode.hardwareMap.get(Servo.class, "tilt");
-        dropper = opmode.hardwareMap.get(CRServo.class, "dropper");
+        //tilt = opmode.hardwareMap.get(Servo.class, "tilt");
+        //dropper = opmode.hardwareMap.get(CRServo.class, "dropper");
 
         fL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         fR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         bL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         bR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        fL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        fR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        bL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        bR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        fL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        fR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        bL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        bR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         fR.setDirection(DcMotorSimple.Direction.REVERSE);
-        lift.setDirection(DcMotorSimple.Direction.REVERSE);
-        lift2.setDirection(DcMotorSimple.Direction.REVERSE);
+        bR.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        parameters.mode = BNO055IMU.SensorMode.IMU;
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.loggingEnabled = false;
+        //BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        //fR.setDirection(DcMotorSimple.Direction.REVERSE);
+        //lift.setDirection(DcMotorSimple.Direction.REVERSE);
+        //lift2.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        imu = opmode.hardwareMap.get(BNO055IMU.class, "imu");
+        //parameters.mode = BNO055IMU.SensorMode.IMU;
+        //parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        //parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        //parameters.loggingEnabled = false;
 
-        imu.initialize(parameters);
+        //imu = opmode.hardwareMap.get(BNO055IMU.class, "imu");
 
-        opmode.telemetry.addData("Mode", "calibrating...");
+        //imu.initialize(parameters);
+
+        /*opmode.telemetry.addData("Mode", "calibrating...");
         opmode.telemetry.update();
 
         // make sure the imu gyro is calibrated before continuing.
@@ -86,7 +91,7 @@ public class hwMap {
 
         opmode.telemetry.addData("Mode", "waiting for start");
         opmode.telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
-        opmode.telemetry.update();
+        opmode.telemetry.update();*/
 
     }
 
@@ -115,6 +120,15 @@ public class hwMap {
         globalAngle += deltaAngle;
 
         lastAngles = angles;
+
+        /*if(globalAngle > 180)
+        {
+            globalAngle -= 360;
+        }
+        else if(globalAngle < -180)
+        {
+            globalAngle += 360;
+        }*/
 
         return -globalAngle;
     }
@@ -307,7 +321,6 @@ public class hwMap {
     }
 
     public void stopAll() {
-
         double pwr = 0;
         fL.setPower(pwr);
         fR.setPower(pwr);

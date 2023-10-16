@@ -1,24 +1,32 @@
 package org.firstinspires.ftc.teamcode.OpenCV;
 
+import com.acmerobotics.dashboard.config.Config;
+
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.utils.Converters;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
 import java.util.List;
 
 //for dashboard
-/*@Config*/
+@Config
 public class StickObserverPipeline extends OpenCvPipeline {
 
+    private static Point contourCoords;
     //backlog of frames to average out to reduce noise
     ArrayList<double[]> frameList;
     //these are public static to be tuned in dashboard
     public static double strictLowS = 140;
     public static double strictHighS = 255;
+    public static double xCoord = 0;
+    public static double yCoord = 0;
 
     public StickObserverPipeline() {
         frameList = new ArrayList<>();
@@ -35,13 +43,18 @@ public class StickObserverPipeline extends OpenCvPipeline {
         }
 
         // lenient bounds will filter out near yellow, this should filter out all near yellow things(tune this if needed)
-        Scalar lowHSV = new Scalar(20, 70, 80); // lenient lower bound HSV for yellow
-        Scalar highHSV = new Scalar(32, 255, 255); // lenient higher bound HSV for yellow
+        Scalar lowHSV = new Scalar(0, 70, 50); // lenient lower bound HSV for yellow 20,70,80
+        Scalar highHSV = new Scalar(30, 255, 255); // lenient higher bound HSV for yellow 32,255,255
+        //blue low: 100, 150, 0
+        //blue high: 140, 255, 255
 
+        Scalar lowHSV2 = new Scalar(150, 70, 50);
+        Scalar highHSV2 = new Scalar(180, 255, 255);
         Mat thresh = new Mat();
 
         // Get a black and white image of yellow objects
         Core.inRange(mat, lowHSV, highHSV, thresh);
+        Core.inRange(mat, lowHSV2, highHSV2, thresh);
 
         Mat masked = new Mat();
         //color the white portion of thresh in with HSV from mat
@@ -97,8 +110,32 @@ public class StickObserverPipeline extends OpenCvPipeline {
         // return thresh;
         // note that you must not do thresh.release() if you want to return thresh
         // you also need to release the input if you return thresh(release as much as possible)
+        double maxContour = 0;
+        MatOfPoint largestContour = new MatOfPoint();
+        for(MatOfPoint contour : contours)
+        {
+            if(Imgproc.contourArea(contour) > maxContour)
+            {
+                maxContour = Imgproc.contourArea(contour);
+                largestContour = contour;
+            }
+        }
+
+        Rect rect = Imgproc.boundingRect(largestContour);
+        Imgproc.rectangle(input, rect, new Scalar(255,0, 0));
+        xCoord = rect.x + rect.width / 2;
+        yCoord = rect.y + rect.height / 2;
+
+        //List<Point> coords = new ArrayList<>();
+        //Converters.Mat_to_vector_Point(largestContour, coords);
+        //contourCoords = coords.get(0);
+
         return input;
     }
 
+    public static Point getContourCoords()
+    {
+        return contourCoords;
+    }
 
 }
