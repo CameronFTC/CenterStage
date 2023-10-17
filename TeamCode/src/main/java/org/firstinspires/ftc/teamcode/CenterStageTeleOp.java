@@ -30,6 +30,11 @@ public class CenterStageTeleOp extends LinearOpMode {
 
         while(opModeIsActive())
         {
+
+            if(gamepad1.start)
+            {
+                imu.resetYaw();
+            }
             //
             //telemetry.addData("Angle: ", hw.getAngle());
             telemetry.update();
@@ -69,31 +74,9 @@ public class CenterStageTeleOp extends LinearOpMode {
         double frPwr = (rotY - rotX - rx) / denominator;
         double brPwr = (rotY + rotX - rx) / denominator;
 
-        if(gamepad1.right_trigger > 0.1)
-        {
-            double error = 90 - heading;
-
-            if(error > 1)
-            {
-                hw.fL.setPower((flPwr + .04 * error) / 2);
-                hw.bL.setPower((blPwr + .04 * error) / 2);
-                hw.fR.setPower(frPwr / 2);
-                hw.bR.setPower(brPwr / 2);
-            }
-            else if(error < -1)
-            {
-                hw.fL.setPower(flPwr / 2);
-                hw.bL.setPower(blPwr / 2);
-                hw.fR.setPower((frPwr + .04 * error) / 2);
-                hw.bR.setPower((brPwr + .04 * error) / 2);
-            }
-        }
-        else
-        {
-            hw.fL.setPower(flPwr);
-            hw.bL.setPower(blPwr);
-            hw.fR.setPower(frPwr);
-            hw.bR.setPower(brPwr);
-        }
+        hw.fL.setPower(-flPwr);
+        hw.bL.setPower(-blPwr);
+        hw.fR.setPower(-frPwr);
+        hw.bR.setPower(-brPwr);
     }
 }

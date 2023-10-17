@@ -20,6 +20,7 @@ import java.util.List;
 public class StickObserverPipeline extends OpenCvPipeline {
 
     private static Point contourCoords;
+    private String color;
     //backlog of frames to average out to reduce noise
     ArrayList<double[]> frameList;
     //these are public static to be tuned in dashboard
@@ -28,7 +29,7 @@ public class StickObserverPipeline extends OpenCvPipeline {
     public static double xCoord = 0;
     public static double yCoord = 0;
 
-    public StickObserverPipeline() {
+    public StickObserverPipeline(String color) {
         frameList = new ArrayList<>();
     }
 
@@ -43,18 +44,38 @@ public class StickObserverPipeline extends OpenCvPipeline {
         }
 
         // lenient bounds will filter out near yellow, this should filter out all near yellow things(tune this if needed)
-        Scalar lowHSV = new Scalar(0, 70, 50); // lenient lower bound HSV for yellow 20,70,80
-        Scalar highHSV = new Scalar(30, 255, 255); // lenient higher bound HSV for yellow 32,255,255
+        Scalar lowHSV; // lenient lower bound HSV for yellow 20,70,80
+        Scalar highHSV; // lenient higher bound HSV for yellow 32,255,255
         //blue low: 100, 150, 0
         //blue high: 140, 255, 255
 
-        Scalar lowHSV2 = new Scalar(150, 70, 50);
-        Scalar highHSV2 = new Scalar(180, 255, 255);
         Mat thresh = new Mat();
+        //remove for blue
+
+        if(color.equals("Red"))
+        {
+            lowHSV = new Scalar(0, 70, 50);
+            highHSV = new Scalar(30, 255, 255);
+            Core.inRange(mat, lowHSV, highHSV, thresh);
+
+            Scalar lowHSV2 = new Scalar(150, 70, 50);
+            Scalar highHSV2 = new Scalar(180, 255, 255);
+            Core.inRange(mat, lowHSV2, highHSV2, thresh);
+        }
+        else if(color.equals("Blue"))
+        {
+            lowHSV = new Scalar(100, 150, 0);
+            highHSV = new Scalar(140, 255, 255);
+            Core.inRange(mat, lowHSV, highHSV, thresh);
+        }
+        else if(color.equals("White"))
+        {
+            lowHSV = new Scalar(0, 0, 168);
+            highHSV = new Scalar(172, 111, 255);
+            Core.inRange(mat, lowHSV, highHSV, thresh);
+        }
 
         // Get a black and white image of yellow objects
-        Core.inRange(mat, lowHSV, highHSV, thresh);
-        Core.inRange(mat, lowHSV2, highHSV2, thresh);
 
         Mat masked = new Mat();
         //color the white portion of thresh in with HSV from mat

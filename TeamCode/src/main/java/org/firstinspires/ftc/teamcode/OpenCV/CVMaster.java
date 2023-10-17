@@ -13,15 +13,18 @@ public class CVMaster {
     private OpenCvWebcam webcam;
     private StickObserverPipeline opencv = null;
     private LinearOpMode op;
-    public CVMaster(LinearOpMode p_op){
+    private String color;
+
+    public CVMaster(LinearOpMode p_op, String color){
         //you can input  a hardwareMap instead of linearOpMode if you want
         op = p_op;
+        this.color = color;
         //initialize webcam
         webcam = OpenCvCameraFactory.getInstance().createWebcam(op.hardwareMap.get(WebcamName.class, "webcam"));
     }
     public void observeStick(){
         //create the pipeline
-        opencv = new StickObserverPipeline();
+        opencv = new StickObserverPipeline(color);
 
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {

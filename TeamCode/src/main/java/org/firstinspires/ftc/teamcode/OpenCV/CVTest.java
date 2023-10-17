@@ -8,7 +8,7 @@ public class CVTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         //        initialize camera and pipeline
-        CVMaster cv = new CVMaster(this);
+        CVMaster cv = new CVMaster(this, "Red");
 //      call the function to startStreaming
         cv.observeStick();
         waitForStart();

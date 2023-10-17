@@ -59,39 +59,39 @@ public class hwMap {
         fR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         bL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         bR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        fL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        fR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        bL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        bR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        fL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         fR.setDirection(DcMotorSimple.Direction.REVERSE);
         bR.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        //BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         //fR.setDirection(DcMotorSimple.Direction.REVERSE);
         //lift.setDirection(DcMotorSimple.Direction.REVERSE);
         //lift2.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        //parameters.mode = BNO055IMU.SensorMode.IMU;
-        //parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        //parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        //parameters.loggingEnabled = false;
+        parameters.mode = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled = false;
 
         //imu = opmode.hardwareMap.get(BNO055IMU.class, "imu");
 
         //imu.initialize(parameters);
 
-        /*opmode.telemetry.addData("Mode", "calibrating...");
-        opmode.telemetry.update();
+        //opmode.telemetry.addData("Mode", "calibrating...");
+        //opmode.telemetry.update();
 
         // make sure the imu gyro is calibrated before continuing.
-        while (!opmode.isStopRequested() && !imu.isGyroCalibrated()) {
-            opmode.sleep(50);
-            opmode.idle();
-        }
+        //while (!opmode.isStopRequested() && !imu.isGyroCalibrated()) {
+        //    opmode.sleep(50);
+        //    opmode.idle();
+        //}
 
-        opmode.telemetry.addData("Mode", "waiting for start");
-        opmode.telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
-        opmode.telemetry.update();*/
+        //opmode.telemetry.addData("Mode", "waiting for start");
+        //opmode.telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
+        //opmode.telemetry.update();
 
     }
 
@@ -121,14 +121,14 @@ public class hwMap {
 
         lastAngles = angles;
 
-        /*if(globalAngle > 180)
+        if(globalAngle > 360)
         {
             globalAngle -= 360;
         }
-        else if(globalAngle < -180)
+        else if(globalAngle < -360)
         {
             globalAngle += 360;
-        }*/
+        }
 
         return -globalAngle;
     }

@@ -10,10 +10,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.teamcode.OpenCV.CVMaster;
 
-@Autonomous(name = "Red Right", group = "Autonomous")
-public class RedRightAuto extends LinearOpMode {
+@Autonomous(name = "Red Left", group = "Autonomous")
+public class RedLeftAuto extends LinearOpMode {
     private IMU imu;
     hwMap hw;
 
@@ -30,14 +29,12 @@ public class RedRightAuto extends LinearOpMode {
 
         imu.initialize(parameters);
 
+        imu.resetYaw();
+
         telemetry.addLine("ready");
         telemetry.update();
 
-        imu.resetYaw();
         //vision
-
-        CVMaster cv = new CVMaster(this, "Red");
-        cv.observeStick();
 
         waitForStart();
 
@@ -45,18 +42,25 @@ public class RedRightAuto extends LinearOpMode {
         {
             imu.resetYaw();
 
-            splineMovement(0.44, -0.4, 0.6, -90);
+            splineMovement(0.46, 0.04, 0.6, -90);
 
             sleep(1000);
 
             //adjust based on april tag
-
-            goStraightPID(-110, 1 / 110, 0.000138138, 0.0005, 2000, -0.6);
+            strafe(-0.4, -840);
 
             //deposit
-            sleep(2000);
+            sleep(500);
 
-            splineMovement(0, 0.65, 0.2, 180);
+            goStraightPID(-1200, 0.005, 0.000138138, 0.0005, 5000, -1);
+
+            sleep(500);
+
+            diagonal(-0.25, -0.3, 530);
+
+            sleep(300);
+
+            strafe(0.4, 300);
 
             sleep(30000);
         }
@@ -146,7 +150,7 @@ public class RedRightAuto extends LinearOpMode {
             oldTime = currTime;
             straight(power, RhAdjust, LhAdjust);
 
-            telemetry.addData("Avg Encoder Val", getAvgEncoder());
+            /*telemetry.addData("Avg Encoder Val", getAvgEncoder());
             telemetry.addData("Gyro Error", error);
             telemetry.addData("Amount left", (distance - getAvgEncoder()));
             telemetry.addData("Forward power", power);
@@ -155,7 +159,7 @@ public class RedRightAuto extends LinearOpMode {
             telemetry.addData("Derivatve", derivative);
             telemetry.addData("Left power: ", LhAdjust);
             telemetry.addData("Right power: ", RhAdjust);
-            telemetry.update();
+            telemetry.update();*/
 
             if (currTime > timeout) {
                 break;
@@ -255,5 +259,66 @@ public class RedRightAuto extends LinearOpMode {
         hw.fR.setPower(pwr);
         hw.bL.setPower(pwr);
         hw.bR.setPower(pwr);
+    }
+
+    public void strafe(double pwr, double distance)
+    {
+        double startPos = hw.fL.getCurrentPosition();
+        double currentPos = 0;
+
+        while(Math.abs(currentPos - distance) > 10)
+        {
+            telemetry.addData("currPos: ", currentPos);
+            telemetry.update();
+            hw.fL.setPower(pwr);
+            hw.bL.setPower(-pwr);
+            hw.fR.setPower(-pwr);
+            hw.bR.setPower(pwr);
+
+            currentPos = hw.fL.getCurrentPosition() - startPos;
+        }
+
+        stopAll();
+    }
+
+    private void diagonal(double yPwr, double xPwr, double distance)
+    {
+        double y = -yPwr;
+        double x = xPwr;
+        double rx = 0;
+
+        double kP = 1 / distance;
+
+        double heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        double startPos = hw.fR.getCurrentPosition();
+        double currentPos = 0;
+
+        while(Math.abs(currentPos - distance) > 5)
+        {
+            telemetry.addData("fR: ", currentPos);
+            telemetry.update();
+            heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+            double error = distance - currentPos;
+
+            double rotX = x * Math.cos(Math.toRadians(-heading)) - y * Math.sin(Math.toRadians(-heading));
+            double rotY = x * Math.sin(Math.toRadians(-heading)) + y * Math.cos(Math.toRadians(-heading));
+
+            rotX = rotX * 1.1;
+
+            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+            double flPwr = (rotY + rotX + rx * (error * kP)) / denominator;
+            double blPwr = (rotY - rotX + rx * (error * kP)) / denominator;
+            double frPwr = (rotY - rotX - rx * (error * kP)) / denominator;
+            double brPwr = (rotY + rotX - rx * (error * kP)) / denominator;
+
+            hw.fL.setPower(-flPwr);
+            hw.bL.setPower(-blPwr);
+            hw.fR.setPower(-frPwr);
+            hw.bR.setPower(-brPwr);
+
+            currentPos = hw.fR.getCurrentPosition() - startPos;
+        }
+
+        stopAll();
     }
 }
