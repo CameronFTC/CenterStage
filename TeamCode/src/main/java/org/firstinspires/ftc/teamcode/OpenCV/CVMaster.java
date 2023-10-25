@@ -10,7 +10,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 public class CVMaster {
-    private OpenCvWebcam webcam;
+    public OpenCvWebcam webcam;
     private StickObserverPipeline opencv = null;
     private LinearOpMode op;
     private String color;

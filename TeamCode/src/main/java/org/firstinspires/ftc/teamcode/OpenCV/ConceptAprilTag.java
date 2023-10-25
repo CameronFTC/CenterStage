@@ -104,7 +104,7 @@ public class ConceptAprilTag extends LinearOpMode {
     /**
      * Initialize the AprilTag processor.
      */
-    private void initAprilTag() {
+    public void initAprilTag() {
 
         // Create the AprilTag processor.
         aprilTag = new AprilTagProcessor.Builder()
@@ -163,7 +163,7 @@ public class ConceptAprilTag extends LinearOpMode {
     /**
      * Function to add telemetry about AprilTag detections.
      */
-    private void telemetryAprilTag() {
+    public void telemetryAprilTag() {
 
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         telemetry.addData("# AprilTags Detected", currentDetections.size());

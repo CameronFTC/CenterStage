@@ -20,7 +20,7 @@ import java.util.List;
 public class StickObserverPipeline extends OpenCvPipeline {
 
     private static Point contourCoords;
-    private String color;
+    private String color = "Red";
     //backlog of frames to average out to reduce noise
     ArrayList<double[]> frameList;
     //these are public static to be tuned in dashboard
@@ -31,6 +31,7 @@ public class StickObserverPipeline extends OpenCvPipeline {
 
     public StickObserverPipeline(String color) {
         frameList = new ArrayList<>();
+        this.color = color;
     }
 
     @Override
@@ -54,12 +55,12 @@ public class StickObserverPipeline extends OpenCvPipeline {
 
         if(color.equals("Red"))
         {
-            lowHSV = new Scalar(0, 70, 50);
+            lowHSV = new Scalar(0, 30, 30);
             highHSV = new Scalar(30, 255, 255);
             Core.inRange(mat, lowHSV, highHSV, thresh);
 
-            Scalar lowHSV2 = new Scalar(150, 70, 50);
-            Scalar highHSV2 = new Scalar(180, 255, 255);
+            Scalar lowHSV2 = new Scalar(130, 50, 50);
+            Scalar highHSV2 = new Scalar(179, 255, 255);
             Core.inRange(mat, lowHSV2, highHSV2, thresh);
         }
         else if(color.equals("Blue"))

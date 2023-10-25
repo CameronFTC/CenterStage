@@ -12,6 +12,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 public class CenterStageTeleOp extends LinearOpMode {
     hwMap hw;
     IMU imu;
+    double angle;
+    double startAngle;
 
     @Override
 
@@ -26,11 +28,13 @@ public class CenterStageTeleOp extends LinearOpMode {
 
         imu.initialize(parameters);
 
+        angle = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        startAngle = angle;
+
         waitForStart();
 
         while(opModeIsActive())
         {
-
             if(gamepad1.start)
             {
                 imu.resetYaw();
@@ -41,6 +45,8 @@ public class CenterStageTeleOp extends LinearOpMode {
 
             //drive();
             fieldCentric();
+            liftMove();
+            intakeMove();
         }
     }
 
@@ -59,14 +65,18 @@ public class CenterStageTeleOp extends LinearOpMode {
         double x = gamepad1.left_stick_x;
         double rx = gamepad1.right_stick_x;
 
-        double heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        //double heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        double heading = getAngle();
+
         telemetry.addData("heading: ", heading);
+        telemetry.addData("start: ", startAngle);
+        telemetry.addData("angle: ", hw.angle());
         telemetry.update();
 
         double rotX = x * Math.cos(Math.toRadians(-heading)) - y * Math.sin(Math.toRadians(-heading));
         double rotY = x * Math.sin(Math.toRadians(-heading)) + y * Math.cos(Math.toRadians(-heading));
 
-        rotX = rotX * 1.1;
+        //rotX = rotX * 1.1;
 
         double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
         double flPwr = (rotY + rotX + rx) / denominator;
@@ -79,4 +89,39 @@ public class CenterStageTeleOp extends LinearOpMode {
         hw.fR.setPower(-frPwr);
         hw.bR.setPower(-brPwr);
     }
+
+    public double getAngle()
+    {
+        angle = hw.angle() + startAngle;
+        if(angle > 180)
+        {
+            angle -= 360;
+        }
+        else if(angle < -180)
+        {
+            angle += 360;
+        }
+
+        return angle;
+    }
+
+    private void liftMove()
+    {
+        if(Math.abs(gamepad2.left_stick_y) > 0.1)
+        {
+            //hw.lift.setPower(gamepad2.left_stick_y);
+            hw.lift2.setPower(gamepad2.left_stick_y);
+        }
+        else
+        {
+            //hw.lift.setPower(0);
+            hw.lift2.setPower(0);
+        }
+    }
+
+   private void intakeMove()
+   {
+        hw.intake.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
+   }
+
 }

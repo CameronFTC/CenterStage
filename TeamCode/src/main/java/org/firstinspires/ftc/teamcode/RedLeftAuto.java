@@ -10,11 +10,31 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.teamcode.OpenCV.CVMaster;
+import org.firstinspires.ftc.teamcode.OpenCV.StickObserverPipeline;
 
 @Autonomous(name = "Red Left", group = "Autonomous")
 public class RedLeftAuto extends LinearOpMode {
     private IMU imu;
     hwMap hw;
+    double angle;
+    double startAngle;
+    double heading;
+    double liftStart;
+    double liftPos = 0;
+    double currentPos = 0;
+    double startPos = 0;
+
+    double slidePos = 0;
+    boolean goNext = false;
+    enum State {
+        spike,
+        backboard,
+        park,
+        intermission,
+    }
+
+    public State currState = State.spike;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -30,45 +50,146 @@ public class RedLeftAuto extends LinearOpMode {
         imu.initialize(parameters);
 
         imu.resetYaw();
+        angle = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        startAngle = angle;
 
         telemetry.addLine("ready");
         telemetry.update();
 
+        imu.resetYaw();
+        angle = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        startAngle = angle;
+
+        liftStart = hw.lift2.getCurrentPosition();
+
         //vision
+        String pos = "Middle";
+
+        CVMaster cv = new CVMaster(this, "Red");
+//      call the function to startStreaming
+        cv.observeStick();
+
+        while(!isStarted())
+        {
+            telemetry.addData("Coords: ", StickObserverPipeline.xCoord + " " + StickObserverPipeline.yCoord);
+            telemetry.addData("Pos: ", pos);
+            telemetry.update();
+
+            double TSE = StickObserverPipeline.xCoord;
+
+            if(TSE > 0 && TSE < 150)
+            {
+                pos = "Left";
+            }
+            else if(TSE >= 150 && TSE < 400)
+            {
+                pos = "Middle";
+            }
+            else if(TSE >= 400)
+            {
+                pos = "Right";
+            }
+        }
 
         waitForStart();
+        imu.resetYaw();
 
         while(opModeIsActive() && !isStopRequested())
         {
-            imu.resetYaw();
+            heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
 
-            splineMovement(0.46, 0.04, 0.6, -90);
+            switch(currState)
+            {
+                case spike:
+                    if(pos.equals("Right"))
+                    {
+                        splineMovement(0.46, -0.08, -0.6, 90,2 );
+                    }
+                    else if(pos.equals("Middle"))
+                    {
 
-            sleep(1000);
+                    }
+                    else
+                    {
+                        splineMovement(0.46, 0.04, 0.6, -91,1);
+                        telemetry.addData("heading: ", heading);
 
-            //adjust based on april tag
-            strafe(-0.4, -840);
+                        slidePos = 500;
+                    }
 
-            //deposit
-            sleep(500);
+                    if(goNext)
+                    {
+                        sleep(1000);
+                        currState = State.intermission;
+                    }
+                    break;
 
-            goStraightPID(-1200, 0.005, 0.000138138, 0.0005, 5000, -1);
+                case intermission:
+                    goNext = false;
 
-            sleep(500);
+                    if(pos.equals("Right"))
+                    {
+                        strafe(0.4, 800);
+                        splineMovement(-0.06, -0.48, 0.67, -90,3);
+                        setLift(-500, -0.7);
 
-            diagonal(-0.25, -0.3, 530);
+                        slidePos = 500;
+                    }
+                    else if(pos.equals("Middle"))
+                    {
 
-            sleep(300);
+                    }
+                    else
+                    {
+                        hw.autoIntake(-1, 1);
+                        strafe(-0.4, -885);
+                        sleep(500);
+                        goStraightPID(-1900, 0.005, 0.0000138138, 0.00005, 5000, -0.8);
+                        sleep(500);
 
-            strafe(0.4, 300);
+                        goNext = true;
+                    }
 
-            sleep(30000);
+                    if(goNext)
+                    {
+                        currState = State.backboard;
+                    }
+                    break;
+
+                case backboard:
+                    goNext = false;
+
+                    if(pos.equals("Right"))
+                    {
+                        strafe(0.4, 600);
+                    }
+                    else if(pos.equals("Middle"))
+                    {
+
+                    }
+                    else
+                    {
+                        setLift(-500, -1.7);
+                        diagonal(-0.4, 0, -720);
+                    }
+
+                    if(goNext)
+                    {
+                        sleep(1000);
+                        currState = State.park;
+                    }
+                    break;
+
+                case park:
+                    goStraightPID(-500, 0.01, 0.000138138, 0.005, 2000, -0.3);
+                    sleep(30000);
+            }
         }
     }
 
     //methods
 
-    private void splineMovement(double yPwr, double xPwr, double rotation, double finalAngle)
+    private void splineMovement(double yPwr, double xPwr, double rotation, double finalAngle, double leniency)
     {
         double y = -yPwr;
         double x = xPwr;
@@ -76,11 +197,12 @@ public class RedLeftAuto extends LinearOpMode {
 
         double kP = 1 / finalAngle;
 
-        double heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        //double heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
 
-        while(Math.abs(heading - finalAngle) > 2)
+        if(Math.abs(heading - finalAngle) > leniency)
         {
-            heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+            //heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+
             double error = finalAngle - heading;
 
             double rotX = x * Math.cos(Math.toRadians(-heading)) - y * Math.sin(Math.toRadians(-heading));
@@ -99,8 +221,11 @@ public class RedLeftAuto extends LinearOpMode {
             hw.fR.setPower(-frPwr);
             hw.bR.setPower(-brPwr);
         }
-
-        stopAll();
+        else
+        {
+            goNext = true;
+            stopAll();
+        }
     }
 
     public void goStraightPID(double distance, double kP, double kI, double kD, double timeout, double max) {
@@ -110,7 +235,7 @@ public class RedLeftAuto extends LinearOpMode {
 
         double oldGyro = 0;
         double power;
-        double start = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        double start = hw.angle();
         double error = 0;
         double currTime = timer.milliseconds();
         double LhAdjust = 0;
@@ -129,7 +254,7 @@ public class RedLeftAuto extends LinearOpMode {
 
             proportional = (distance - travel) * kP;
             integral += (travel - (getAvgEncoder() - startStraight)) * (currTime - oldTime) * kI;
-            derivative = (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) - oldGyro) * kD;
+            derivative = (getAngle() - oldGyro) * kD;
             power = integral + proportional + derivative;
 
             error = getTrueDiff(start);
@@ -165,7 +290,7 @@ public class RedLeftAuto extends LinearOpMode {
                 break;
             }
 
-            oldGyro = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+            oldGyro = getAngle();
         }
 
         stopAll();
@@ -223,7 +348,7 @@ public class RedLeftAuto extends LinearOpMode {
     }
 
     public double getTrueDiff(double destTurn){
-        double currAng = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        double currAng = hw.angle();
 
         if((currAng >= 0 && destTurn >= 0) || (currAng <= 0 && destTurn <= 0))
             return destTurn - currAng;
@@ -271,9 +396,9 @@ public class RedLeftAuto extends LinearOpMode {
             telemetry.addData("currPos: ", currentPos);
             telemetry.update();
             hw.fL.setPower(pwr);
-            hw.bL.setPower(-pwr);
+            hw.bL.setPower(-pwr * 1.05);
             hw.fR.setPower(-pwr);
-            hw.bR.setPower(pwr);
+            hw.bR.setPower(pwr * 1.05);
 
             currentPos = hw.fL.getCurrentPosition() - startPos;
         }
@@ -281,6 +406,7 @@ public class RedLeftAuto extends LinearOpMode {
         stopAll();
     }
 
+    boolean start = false;
     private void diagonal(double yPwr, double xPwr, double distance)
     {
         double y = -yPwr;
@@ -289,11 +415,17 @@ public class RedLeftAuto extends LinearOpMode {
 
         double kP = 1 / distance;
 
-        double heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-        double startPos = hw.fR.getCurrentPosition();
-        double currentPos = 0;
+        if(!start)
+        {
+            startPos = hw.fR.getCurrentPosition();
+        }
 
-        while(Math.abs(currentPos - distance) > 5)
+        start = true;
+        //double heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+
+        currentPos = hw.fR.getCurrentPosition() - startPos;
+
+        if(Math.abs(currentPos - distance) > 30)
         {
             telemetry.addData("fR: ", currentPos);
             telemetry.update();
@@ -312,13 +444,57 @@ public class RedLeftAuto extends LinearOpMode {
             double brPwr = (rotY + rotX - rx * (error * kP)) / denominator;
 
             hw.fL.setPower(-flPwr);
-            hw.bL.setPower(-blPwr);
+            hw.bL.setPower(-blPwr * 1.05);
             hw.fR.setPower(-frPwr);
-            hw.bR.setPower(-brPwr);
+            hw.bR.setPower(-brPwr * 1.05);
+        }
+        else
+        {
+            goNext = true;
+            stopAll();
+        }
+    }
 
-            currentPos = hw.fR.getCurrentPosition() - startPos;
+    public double getAngle()
+    {
+        angle = hw.angle() + startAngle;
+        if(angle > 180)
+        {
+            angle -= 360;
+        }
+        else if(angle < -180)
+        {
+            angle += 360;
         }
 
-        stopAll();
+        return angle;
+    }
+
+    public void setLift(double target, double pwr)
+    {
+        double currPos = getLiftPos();
+
+        double kP = 1 / (target - slidePos);
+
+        if(Math.abs(target - currPos) > 75)
+        {
+            double error = target - currPos;
+            hw.lift2.setPower(pwr * kP * (error));
+        }
+        else
+        {
+            hw.lift2.setPower(0);
+        }
+
+        telemetry.addData("lift: ", currPos);
+        telemetry.update();
+    }
+
+    public double getLiftPos()
+    {
+        double deltaLift = hw.lift2.getCurrentPosition() - liftStart;
+        liftPos = deltaLift;
+
+        return liftPos;
     }
 }

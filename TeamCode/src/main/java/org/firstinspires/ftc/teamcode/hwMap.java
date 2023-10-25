@@ -23,6 +23,8 @@ public class hwMap {
     public DcMotor lift;
     public DcMotor lift2;
 
+    public DcMotor intake;
+
     public Servo tilt;
     public CRServo dropper;
 
@@ -47,8 +49,11 @@ public class hwMap {
         bL = opmode.hardwareMap.get(DcMotor.class, "bL");
         bR = opmode.hardwareMap.get(DcMotor.class, "bR");
 
-        //lift = opmode.hardwareMap.get(DcMotor.class, "lift");
-        //lift2 = opmode.hardwareMap.get(DcMotor.class, "lift2");
+        lift = opmode.hardwareMap.get(DcMotor.class, "lift");
+        lift2 = opmode.hardwareMap.get(DcMotor.class, "lift2");
+
+        intake = opmode.hardwareMap.get(DcMotor.class, "intake");
+
 
         liftEncoderGlobal = 0;
 
@@ -65,10 +70,11 @@ public class hwMap {
         bR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         fR.setDirection(DcMotorSimple.Direction.REVERSE);
         bR.setDirection(DcMotorSimple.Direction.REVERSE);
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         //fR.setDirection(DcMotorSimple.Direction.REVERSE);
-        //lift.setDirection(DcMotorSimple.Direction.REVERSE);
+        lift.setDirection(DcMotorSimple.Direction.REVERSE);
         //lift2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         parameters.mode = BNO055IMU.SensorMode.IMU;
@@ -76,22 +82,22 @@ public class hwMap {
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.loggingEnabled = false;
 
-        //imu = opmode.hardwareMap.get(BNO055IMU.class, "imu");
+        imu = opmode.hardwareMap.get(BNO055IMU.class, "chImu");
 
-        //imu.initialize(parameters);
+        imu.initialize(parameters);
 
-        //opmode.telemetry.addData("Mode", "calibrating...");
-        //opmode.telemetry.update();
+        opmode.telemetry.addData("Mode", "calibrating...");
+        opmode.telemetry.update();
 
         // make sure the imu gyro is calibrated before continuing.
-        //while (!opmode.isStopRequested() && !imu.isGyroCalibrated()) {
-        //    opmode.sleep(50);
-        //    opmode.idle();
-        //}
+        while (!opmode.isStopRequested() && !imu.isGyroCalibrated()) {
+            opmode.sleep(50);
+            opmode.idle();
+        }
 
-        //opmode.telemetry.addData("Mode", "waiting for start");
-        //opmode.telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
-        //opmode.telemetry.update();
+        opmode.telemetry.addData("Mode", "waiting for start");
+        opmode.telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
+        opmode.telemetry.update();
 
     }
 
@@ -101,6 +107,12 @@ public class hwMap {
         globalAngle = 0;
     }
 
+    public double angle()
+    {
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES);
+
+        return angles.firstAngle;
+    }
     public double getAngle() {
         // We experimentally determined the Z axis is the axis we want to use for heading angle.
         // We have to process the angle because the imu works in euler angles so the Z axis is
@@ -482,5 +494,19 @@ public class hwMap {
         fR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         opmode.idle();
 
+    }
+
+    public void autoIntake(double pwr, double time)
+    {
+        ElapsedTime timer = new ElapsedTime();
+
+        double elapsedTime = timer.seconds();
+
+        while(elapsedTime < time)
+        {
+            intake.setPower(pwr);
+        }
+
+        intake.setPower(0);
     }
 }
