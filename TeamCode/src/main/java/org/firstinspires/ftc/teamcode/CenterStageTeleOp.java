@@ -109,12 +109,12 @@ public class CenterStageTeleOp extends LinearOpMode {
     {
         if(Math.abs(gamepad2.left_stick_y) > 0.1)
         {
-            //hw.lift.setPower(gamepad2.left_stick_y);
+            hw.lift.setPower(gamepad2.left_stick_y);
             hw.lift2.setPower(gamepad2.left_stick_y);
         }
         else
         {
-            //hw.lift.setPower(0);
+            hw.lift.setPower(0);
             hw.lift2.setPower(0);
         }
     }
