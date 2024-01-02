@@ -32,6 +32,7 @@ public class RedLeftAuto extends LinearOpMode {
         backboard,
         park,
         intermission,
+        rightOnly,
     }
 
     public State currState = State.spike;
@@ -103,11 +104,13 @@ public class RedLeftAuto extends LinearOpMode {
                 case spike:
                     if(pos.equals("Right"))
                     {
-                        splineMovement(0.46, -0.08, -0.6, 90,2 );
+                        splineMovement(0.46, -0.07, -0.6, 91,1);
                     }
                     else if(pos.equals("Middle"))
                     {
+                        goStraightPID(-1400, 0.01, 0.000138138, 0.005, 3000, -0.6);
 
+                        goNext = true;
                     }
                     else
                     {
@@ -129,22 +132,21 @@ public class RedLeftAuto extends LinearOpMode {
 
                     if(pos.equals("Right"))
                     {
-                        strafe(0.4, 800);
-                        splineMovement(-0.06, -0.48, 0.67, -90,3);
-                        setLift(-500, -0.7);
+                        splineMovement(0.29, 0.05, 0.6, -91, 0.5);
+                        //setLift(-500, -0.7);
 
                         slidePos = 500;
                     }
                     else if(pos.equals("Middle"))
                     {
-
+                        splineMovement(0, -0.8, 0.3, -91, 0.5);
                     }
                     else
                     {
-                        hw.autoIntake(-1, 1);
-                        strafe(-0.4, -885);
+                        //hw.autoIntake(-1, 1);
+                        strafe(-0.4, -830);
                         sleep(500);
-                        goStraightPID(-1900, 0.005, 0.0000138138, 0.00005, 5000, -0.8);
+                        goStraightPID(-2100, 0.005, 0.0000138138, 0.00005, 5000, -0.6);
                         sleep(500);
 
                         goNext = true;
@@ -161,27 +163,44 @@ public class RedLeftAuto extends LinearOpMode {
 
                     if(pos.equals("Right"))
                     {
-                        strafe(0.4, 600);
+                        goStraightPID(-2200, 0.005, 0.0000138138, 0.00005, 5000, -0.6);
+
+                        goNext = true;
                     }
                     else if(pos.equals("Middle"))
                     {
-
+                        sleep(30000);
                     }
                     else
                     {
-                        setLift(-500, -1.7);
-                        diagonal(-0.4, 0, -720);
+                        //setLift(-500, -0.7);
+                        diagonal(-0.4, 0, -590);
                     }
+
+                    if(goNext && !pos.equals("Right"))
+                    {
+                        sleep(1000);
+                        currState = State.park;
+                    }
+                    else if(goNext && pos.equals("Right"))
+                    {
+                        sleep(1000);
+                        currState = State.rightOnly;
+                    }
+                    break;
+
+                case rightOnly:
+                    goNext = false;
+                    diagonal(-0.4, 0, -1150);
 
                     if(goNext)
                     {
-                        sleep(1000);
                         currState = State.park;
                     }
                     break;
 
                 case park:
-                    goStraightPID(-500, 0.01, 0.000138138, 0.005, 2000, -0.3);
+                    goStraightPID(-420, 0.01, 0.000138138, 0.005, 2000, -0.3);
                     sleep(30000);
             }
         }
@@ -364,8 +383,8 @@ public class RedLeftAuto extends LinearOpMode {
 
     public void straight(double pwr, double RhAdj, double LhAdj) {
         double max = Math.max(Math.abs(pwr + LhAdj), Math.abs(pwr + RhAdj));
-        double leftPwr = pwr + LhAdj;
-        double rightPwr = pwr + RhAdj;
+        double leftPwr = pwr;
+        double rightPwr = pwr;
 
         if (max > 1) {
             leftPwr /= max;
@@ -395,10 +414,11 @@ public class RedLeftAuto extends LinearOpMode {
         {
             telemetry.addData("currPos: ", currentPos);
             telemetry.update();
+
             hw.fL.setPower(pwr);
-            hw.bL.setPower(-pwr * 1.05);
+            hw.bL.setPower(-pwr * 1.08);
             hw.fR.setPower(-pwr);
-            hw.bR.setPower(pwr * 1.05);
+            hw.bR.setPower(pwr * 1.08);
 
             currentPos = hw.fL.getCurrentPosition() - startPos;
         }
@@ -480,10 +500,12 @@ public class RedLeftAuto extends LinearOpMode {
         {
             double error = target - currPos;
             hw.lift2.setPower(pwr * kP * (error));
+            hw.lift.setPower(pwr * kP * (error));
         }
         else
         {
             hw.lift2.setPower(0);
+            hw.lift.setPower(0);
         }
 
         telemetry.addData("lift: ", currPos);
@@ -492,7 +514,7 @@ public class RedLeftAuto extends LinearOpMode {
 
     public double getLiftPos()
     {
-        double deltaLift = hw.lift2.getCurrentPosition() - liftStart;
+        double deltaLift = (hw.lift2.getCurrentPosition() + hw.lift.getCurrentPosition())  / 2 - liftStart;
         liftPos = deltaLift;
 
         return liftPos;

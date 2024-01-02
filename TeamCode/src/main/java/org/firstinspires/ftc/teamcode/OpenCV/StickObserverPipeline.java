@@ -28,6 +28,7 @@ public class StickObserverPipeline extends OpenCvPipeline {
     public static double strictHighS = 255;
     public static double xCoord = 0;
     public static double yCoord = 0;
+    public static double maxContour = 0;
 
     public StickObserverPipeline(String color) {
         frameList = new ArrayList<>();
@@ -55,13 +56,17 @@ public class StickObserverPipeline extends OpenCvPipeline {
 
         if(color.equals("Red"))
         {
-            lowHSV = new Scalar(0, 30, 30);
-            highHSV = new Scalar(30, 255, 255);
-            Core.inRange(mat, lowHSV, highHSV, thresh);
+            Mat subThresh1 = new Mat();
+            Mat subThresh2 = new Mat();
+            lowHSV = new Scalar(0, 50, 50);
+            highHSV = new Scalar(10, 255, 255);
+            Core.inRange(mat, lowHSV, highHSV, subThresh1);
 
-            Scalar lowHSV2 = new Scalar(130, 50, 50);
-            Scalar highHSV2 = new Scalar(179, 255, 255);
-            Core.inRange(mat, lowHSV2, highHSV2, thresh);
+            Scalar lowHSV2 = new Scalar(170, 50, 50);
+            Scalar highHSV2 = new Scalar(180, 255, 255);
+            Core.inRange(mat, lowHSV2, highHSV2, subThresh2);
+
+            Core.bitwise_or(subThresh1, subThresh2, thresh);
         }
         else if(color.equals("Blue"))
         {
@@ -140,6 +145,7 @@ public class StickObserverPipeline extends OpenCvPipeline {
             {
                 maxContour = Imgproc.contourArea(contour);
                 largestContour = contour;
+                this.maxContour = maxContour;
             }
         }
 

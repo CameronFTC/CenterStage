@@ -2,10 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -16,8 +18,12 @@ import org.firstinspires.ftc.teamcode.OpenCV.CVMaster;
 import org.firstinspires.ftc.teamcode.OpenCV.ConceptAprilTag;
 import org.firstinspires.ftc.teamcode.OpenCV.StickObserverPipeline;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
+import java.util.List;
+
+@Disabled
 @Autonomous(name = "Red Right", group = "Autonomous")
 public class RedRightAuto extends LinearOpMode {
     private IMU imu;
@@ -33,14 +39,32 @@ public class RedRightAuto extends LinearOpMode {
 
     double slidePos = 0;
     boolean goNext = false;
+    boolean aprilFound = true;
 
     enum State {
         spike,
         backboard,
         park,
+        april,
     }
 
+    final int DESIRED_DISTANCE = 3;
+    int DESIRED_TAG_ID = 4;
+    final double SPEED_GAIN  =  0.02  ;   //  0.02 Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN =  0.015 ;   // 0.015 Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+    final double TURN_GAIN   =  0.4  ;   //  0.01 Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+
+    final double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_STRAFE= 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
+    private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
+
     private State currState = State.backboard;
+    AprilTag april;
+    boolean targetFound;
+    double drive;
+    double strafe;
+    double turn;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -64,6 +88,8 @@ public class RedRightAuto extends LinearOpMode {
 
         liftStart = hw.lift2.getCurrentPosition();
 
+        intakeUp();
+
         //vision
         String pos = "Middle";
 
@@ -83,16 +109,19 @@ public class RedRightAuto extends LinearOpMode {
             {
                 pos = "Left";
                 currState = State.spike;
+                DESIRED_TAG_ID = 4;
             }
             else if(TSE >= 50 && TSE < 400)
             {
                 pos = "Middle";
-                currState = State.backboard;
+                currState = State.spike;
+                DESIRED_TAG_ID = 5;
             }
             else if(TSE >= 400)
             {
                 pos = "Right";
-                currState = State.backboard;
+                currState = State.spike;
+                DESIRED_TAG_ID = 6;
             }
         }
 
@@ -112,18 +141,31 @@ public class RedRightAuto extends LinearOpMode {
         // Build the Vision Portal, using the above settings.
         visionPortal = builder.build();*/
 
+        targetFound     = false;    // Set to true when an AprilTag target is detected
+        drive           = 0;        // Desired forward power/speed (-1 to +1)
+        strafe          = 0;        // Desired strafe power/speed (-1 to +1)
+        turn            = 0;        // Desired turning power/speed (-1 to +1)
+
         waitForStart();
 
         imu.resetYaw();
         cv.stopCamera();
-        //pos = "Left";
+
+        april = new AprilTag(this);
+
+        pos = "Middle";
+        DESIRED_TAG_ID = 5;
         //currState = State.spike;
         while(opModeIsActive() && !isStopRequested())
         {
             //imu.resetYaw();
 
+            april.telemetryAprilTag();
+            telemetry.update();
+
             slidePos = 0;
-            heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+            heading = hw.getAngle();
+            RobotOrientation.angle = heading;
 
             //telemetry.addData("heading: ", heading);
             //telemetry.update();
@@ -133,34 +175,58 @@ public class RedRightAuto extends LinearOpMode {
                 switch(currState)
                 {
                     case backboard:
-                        splineMovement(0.4, -0.39, 0.6, -91, 1);
-                        setLift(-500, -0.7);
+                        goNext = false;
+                        //splineMovement(0.48, -0.42, 0.6, -91, 1);
+                        goStraightPID(-200, 0.01, 0.000138138, 0.005, 4000, -0.5);
 
-                        slidePos = 500;
+                        goNext = true;
 
                         if(goNext)
                         {
-                            sleep(2000);
-                            currState = State.spike;
+                            outtakeExtend();
+                            currState = State.april;
                         }
                         break;
 
                     case spike:
                         goNext = false;
-                        splineMovement(-0.05, 0.65, 0.2, 180, 2);
-                        setLift(0, 0.7);
+                        //splineMovement(-0.05, 0.68, 0.2, 180, 2);
+                        //setLift(0, 0.7);
+                        splineMovement(0.425, -0.05, 0.63, -115, 3);
 
                         slidePos = 0;
 
                         if(goNext)
                         {
-                            sleep(1000);
+                            hw.autoIntake(-1, 1);
+                            currState = State.backboard;
+                        }
+                        break;
+
+                    case april:
+                        goNext = false;
+
+                        //setLift(-500, -0.7);
+
+                        aprilTagAdjust();
+
+                        slidePos = 500;
+
+                        if(goNext)
+                        {
+                            goStraightPID(-300, 0.01, 0.000138138, 0.005, 4000, -0.5);
+                            hw.liftTimer(-0.7, 1);
+
                             currState = State.park;
                         }
                         break;
 
                     case park:
-                        hw.autoIntake(-1, 1);
+                        //hw.autoIntake(-1, 5);
+                        splineMovement(0, -0.03, -0.1, -89, 1);
+                        //hw.autoDrop(1, 1);
+
+                        //outtakeRetract();
                         sleep(30000);
                         break;
                 }
@@ -170,7 +236,7 @@ public class RedRightAuto extends LinearOpMode {
                 switch(currState)
                 {
                     case backboard:
-                        splineMovement(0.23, -0.3, 0.6, -91, 1);
+                        splineMovement(0.27, -0.34, 0.6, -91, 1);
                         setLift(-500, -0.7);
 
                         slidePos = 500;
@@ -184,7 +250,7 @@ public class RedRightAuto extends LinearOpMode {
 
                     case spike:
                         goNext = false;
-                        splineMovement(0, 0.52, 0.2, 180, 2);
+                        splineMovement(0, 0.54, 0.2, 180, 2);
                         setLift(0, 0.7);
 
                         slidePos = 0;
@@ -197,7 +263,7 @@ public class RedRightAuto extends LinearOpMode {
                         break;
 
                     case park:
-                        hw.autoIntake(-1, 1);
+                        //hw.autoIntake(-1, 5);
                         sleep(30000);
                 }
             }
@@ -206,7 +272,7 @@ public class RedRightAuto extends LinearOpMode {
                 switch(currState)
                 {
                     case spike:
-                        splineMovement(0.43, 0.08, 0.6, -91, 1);
+                        splineMovement(0.53, 0.13, 0.6, -91, 1);
                         setLift(-500, -0.7);
 
                         slidePos = 500;
@@ -223,7 +289,7 @@ public class RedRightAuto extends LinearOpMode {
 
                     case backboard:
                         goNext = false;
-                        goStraightPID(-1220, 0.01, 0.00138138, 0.05, 4000, -0.7);
+                        goStraightPID(-1060, 0.01, 0.000138138, 0.005, 4000, -0.5);
                         goNext = true;
 
                         if(goNext)
@@ -234,7 +300,7 @@ public class RedRightAuto extends LinearOpMode {
                         break;
 
                     case park:
-                        hw.autoIntake(-1, 1);
+                        //hw.autoIntake(-1, 5);
                         sleep(30000);
                 }
             }
@@ -426,8 +492,8 @@ public class RedRightAuto extends LinearOpMode {
 
     public void straight(double pwr, double RhAdj, double LhAdj) {
         double max = Math.max(Math.abs(pwr + LhAdj), Math.abs(pwr + RhAdj));
-        double leftPwr = pwr + LhAdj;
-        double rightPwr = pwr + RhAdj;
+        double leftPwr = pwr;
+        double rightPwr = pwr;
 
         if (max > 1) {
             leftPwr /= max;
@@ -473,10 +539,12 @@ public class RedRightAuto extends LinearOpMode {
        {
            double error = target - currPos;
            hw.lift2.setPower(pwr * kP * (error));
+           hw.lift.setPower(pwr * kP * (error));
        }
        else
        {
            hw.lift2.setPower(0);
+           hw.lift.setPower(0);
        }
 
        telemetry.addData("lift: ", currPos);
@@ -489,5 +557,113 @@ public class RedRightAuto extends LinearOpMode {
         liftPos = deltaLift;
 
         return liftPos;
+    }
+
+    public void aprilTagAdjust()
+    {
+        april.telemetryAprilTag();
+        telemetry.update();
+
+        targetFound = false;
+        desiredTag  = null;
+
+        // Step through the list of detected tags and look for a matching tag
+        List<AprilTagDetection> currentDetections = april.getAprilTag().getDetections();
+        for (AprilTagDetection detection : currentDetections) {
+            if ((detection.metadata != null)
+                    && ((DESIRED_TAG_ID >= 0) || (detection.id == DESIRED_TAG_ID))  ){
+                targetFound = true;
+                desiredTag = detection;
+                break;  // don't look any further.
+            }
+        }
+
+        // Tell the driver what we see, and what to do.
+        if (targetFound) {
+            telemetry.addData(">","HOLD Left-Bumper to Drive to Target\n");
+            telemetry.addData("Target", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
+            telemetry.addData("Range",  "%5.1f inches", desiredTag.ftcPose.range);
+            telemetry.addData("Bearing","%3.0f degrees", desiredTag.ftcPose.bearing);
+            telemetry.addData("Yaw","%3.0f degrees", desiredTag.ftcPose.yaw);
+        } else {
+            telemetry.addData(">","Drive using joystick to find target\n");
+        }
+
+        // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
+        if (targetFound) {
+
+            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+            double  rangeError      = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
+            double  headingError    = desiredTag.ftcPose.bearing * -1;
+            double  yawError        = desiredTag.ftcPose.yaw;
+
+            // Use the speed and turn "gains" to calculate how we want the robot to move.
+            drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+            turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+            strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+
+            telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+        }
+        else
+        {
+            drive = 0;
+            strafe = 0;
+            turn = 0;
+
+            goNext = true;
+        }
+
+        moveRobot(drive, strafe, turn);
+        telemetry.update();
+    }
+
+    public void moveRobot(double x, double y, double yaw) {
+        // Calculate wheel powers.
+        double leftFrontPower    =  x -y -yaw;
+        double rightFrontPower   =  x +y +yaw;
+        double leftBackPower     =  x +y -yaw;
+        double rightBackPower    =  x -y +yaw;
+
+        // Normalize wheel powers to be less than 1.0
+        double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+        max = Math.max(max, Math.abs(leftBackPower));
+        max = Math.max(max, Math.abs(rightBackPower));
+
+        if (max > 1.0) {
+            leftFrontPower /= max;
+            rightFrontPower /= max;
+            leftBackPower /= max;
+            rightBackPower /= max;
+        }
+
+        // Send powers to the wheels.
+        hw.fL.setPower(leftFrontPower);
+        hw.fR.setPower(rightFrontPower);
+        hw.bL.setPower(leftBackPower);
+        hw.bR.setPower(rightBackPower);
+    }
+
+    public void intakeUp()
+    {
+        hw.intakeServo1.setPosition(1);
+        hw.intakeServo2.setPosition(0);
+    }
+
+    public void intakeDown()
+    {
+        hw.intakeServo1.setPosition(0.49);
+        hw.intakeServo2.setPosition(0.49);
+    }
+
+    public void outtakeExtend()
+    {
+        hw.outtake1.setPosition(1);
+        hw.outtake2.setPosition(0.9);
+    }
+
+    public void outtakeRetract()
+    {
+        hw.outtake1.setPosition(0);
+        hw.outtake2.setPosition(0);
     }
 }

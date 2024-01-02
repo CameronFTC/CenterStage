@@ -22,11 +22,17 @@ public class hwMap {
     public DcMotor bL;
     public DcMotor lift;
     public DcMotor lift2;
+    public Servo outtake1;
+    public Servo outtake2;
+    public Servo intakeServo1;
+    public Servo intakeServo2;
+    public Servo droneLauncher;
 
+    public CRServo dropper;
     public DcMotor intake;
 
     public Servo tilt;
-    public CRServo dropper;
+
 
     public BNO055IMU imu;
     public Orientation lastAngles = new Orientation();
@@ -54,11 +60,16 @@ public class hwMap {
 
         intake = opmode.hardwareMap.get(DcMotor.class, "intake");
 
+        intakeServo1 = opmode.hardwareMap.get(Servo.class, "intakeServo");
+        intakeServo2 = opmode.hardwareMap.get(Servo.class, "intakeServo2");
 
+        droneLauncher = opmode.hardwareMap.get(Servo.class, "drone");
         liftEncoderGlobal = 0;
 
         //tilt = opmode.hardwareMap.get(Servo.class, "tilt");
-        //dropper = opmode.hardwareMap.get(CRServo.class, "dropper");
+        dropper = opmode.hardwareMap.get(CRServo.class, "dropper");
+        outtake1 = opmode.hardwareMap.get(Servo.class, "outtake1");
+        outtake2 = opmode.hardwareMap.get(Servo.class, "outtake2");
 
         fL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         fR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -75,6 +86,7 @@ public class hwMap {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         //fR.setDirection(DcMotorSimple.Direction.REVERSE);
         lift.setDirection(DcMotorSimple.Direction.REVERSE);
+        //
         //lift2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         parameters.mode = BNO055IMU.SensorMode.IMU;
@@ -102,14 +114,14 @@ public class hwMap {
     }
 
     public void resetAngle() {
-        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES);
+        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         globalAngle = 0;
     }
 
     public double angle()
     {
-        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES);
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         return angles.firstAngle;
     }
@@ -119,7 +131,7 @@ public class hwMap {
         // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
         // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
 
-        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES);
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
 
@@ -133,16 +145,16 @@ public class hwMap {
 
         lastAngles = angles;
 
-        if(globalAngle > 360)
+        if(globalAngle > 180)
         {
             globalAngle -= 360;
         }
-        else if(globalAngle < -360)
+        else if(globalAngle < -180)
         {
             globalAngle += 360;
         }
 
-        return -globalAngle;
+        return globalAngle;
     }
 
     public void lift(double distance, double pwr, double kP){
@@ -505,8 +517,42 @@ public class hwMap {
         while(elapsedTime < time)
         {
             intake.setPower(pwr);
+            elapsedTime = timer.seconds();
         }
 
         intake.setPower(0);
+    }
+
+    public void autoDrop(double pwr, double time)
+    {
+        ElapsedTime timer = new ElapsedTime();
+
+        double elapsedTime = timer.seconds();
+
+        while(elapsedTime < time)
+        {
+            dropper.setPower(pwr);
+            elapsedTime = timer.seconds();
+        }
+
+        dropper.setPower(0);
+    }
+
+    public void liftTimer(double pwr, double time)
+    {
+        ElapsedTime timer = new ElapsedTime();
+
+        double elapsedTime = timer.seconds();
+
+        while(elapsedTime < time)
+        {
+            lift.setPower(pwr);
+            lift2.setPower(pwr);
+
+            elapsedTime = timer.seconds();
+        }
+
+        lift.setPower(0);
+        lift2.setPower(0);
     }
 }
