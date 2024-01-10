@@ -658,12 +658,11 @@ public class RedRightAuto extends LinearOpMode {
     public void outtakeExtend()
     {
         hw.outtake1.setPosition(1);
-        hw.outtake2.setPosition(0.9);
+
     }
 
     public void outtakeRetract()
     {
         hw.outtake1.setPosition(0);
-        hw.outtake2.setPosition(0);
     }
 }

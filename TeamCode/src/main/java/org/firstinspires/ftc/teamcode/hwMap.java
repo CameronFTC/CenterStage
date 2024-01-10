@@ -13,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+//import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 
 public class hwMap {
 
@@ -23,7 +24,7 @@ public class hwMap {
     public DcMotor lift;
     public DcMotor lift2;
     public Servo outtake1;
-    public Servo outtake2;
+
     public Servo intakeServo1;
     public Servo intakeServo2;
     public Servo droneLauncher;
@@ -32,6 +33,8 @@ public class hwMap {
     public DcMotor intake;
 
     public Servo tilt;
+
+   // public ModernRoboticsI2cColorSensor colorSensor;
 
 
     public BNO055IMU imu;
@@ -69,7 +72,8 @@ public class hwMap {
         //tilt = opmode.hardwareMap.get(Servo.class, "tilt");
         dropper = opmode.hardwareMap.get(CRServo.class, "dropper");
         outtake1 = opmode.hardwareMap.get(Servo.class, "outtake1");
-        outtake2 = opmode.hardwareMap.get(Servo.class, "outtake2");
+
+        //colorSensor = opmode.hardwareMap.get(ModernRoboticsI2cColorSensor.class, "colorSensor");
 
         fL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         fR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
