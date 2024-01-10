@@ -71,7 +71,7 @@ public class hwMap {
         outtake1 = opmode.hardwareMap.get(Servo.class, "outtake1");
         outtake2 = opmode.hardwareMap.get(Servo.class, "outtake2");
 
-        fL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //fL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         fR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         bL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         bR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
