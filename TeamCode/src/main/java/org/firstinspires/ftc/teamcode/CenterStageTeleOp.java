@@ -222,6 +222,7 @@ public class CenterStageTeleOp extends LinearOpMode {
     }
 
     private void outakeMove() {
+
         if (gamepad2.left_bumper) {
             hw.outtake1.setPosition(1);
 
@@ -235,21 +236,30 @@ public class CenterStageTeleOp extends LinearOpMode {
     }
 
     public void intakeServos() {
+        telemetry.addData("servo1: ", hw.intakeServo1.getPosition());
+        telemetry.addData("servo2: ", hw.intakeServo2.getPosition());
+        if(!hw.intakeServo1.equals(0.00)){
+            telemetry.addData("not at 0", hw.intakeServo1.getPosition());
+        }
+        telemetry.update();
+
+
+
         if (gamepad2.a) {
             hw.intakeServo1.setPosition(1);
-            hw.intakeServo2.setPosition(0);
+            hw.intakeServo2.setPosition(.2);
             //hw.droneLauncher.setPosition(0);
         } else if (gamepad2.b) {
             //hw.intakeServo1.setPosition(0.5);
             //hw.intakeServo2.setPosition(0.51);
-            hw.intakeServo1.setPosition(0.6);
-            hw.intakeServo2.setPosition(.45);
+            hw.intakeServo1.setPosition(0.3);
+            hw.intakeServo2.setPosition(.675);
         }
     }
 
     public void droneLaunch() {
         if (gamepad2.y) {
-            hw.droneLauncher.setPosition(0.2);
+            hw.droneLauncher.setPosition(0.5);
         }
     }
 }
