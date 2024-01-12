@@ -252,12 +252,13 @@ public class CenterStageTeleOp extends LinearOpMode {
         } else if (gamepad2.b) {
             //hw.intakeServo1.setPosition(0.5);
             //hw.intakeServo2.setPosition(0.51);
-            hw.intakeServo1.setPosition(0.3);
+            hw.intakeServo1.setPosition(0.325);
             hw.intakeServo2.setPosition(.675);
         }
     }
 
     public void droneLaunch() {
+
         if (gamepad2.y) {
             hw.droneLauncher.setPosition(0.5);
         }
