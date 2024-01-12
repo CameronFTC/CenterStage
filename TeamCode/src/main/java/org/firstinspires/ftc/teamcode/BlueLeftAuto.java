@@ -168,7 +168,7 @@ public class BlueLeftAuto extends LinearOpMode {
                 switch(currState)
                 {
                     case backboard:
-                        splineMovement(0.525, 0.32, -0.3, 91, 4);
+                        splineMovement(-0.525, 0.32, -0.3, 91, 4);
                         outtakeExtend();
                         setLift(-1325, -0.7);
 
@@ -243,7 +243,7 @@ public class BlueLeftAuto extends LinearOpMode {
                 switch(currState)
                 {
                     case backboard:
-                        splineMovement(0.54, 0.38, -0.4, 91, 3);
+                        splineMovement(-0.54, 0.38, -0.4, 91, 3);
                         outtakeExtend();
                         setLift(-1275, -0.7);
 
@@ -318,11 +318,11 @@ public class BlueLeftAuto extends LinearOpMode {
                 switch(currState)
                 {
                     case spike:
-                        splineMovement(0.55, -0.225, -0.3, 91, 7);
-                        setLift(-1275, -0.4);
-                        outtakeExtend();
+                        splineMovement(-0.59, 0.225, -0.2562, 91, 7);
+                        //setLift(-1275, -0.4);
+                        //outtakeExtend();
 
-                        slidePos = 500;
+                        //slidePos = 500;
 
                         telemetry.addData("heading: ", heading);
                         telemetry.update();
@@ -332,10 +332,10 @@ public class BlueLeftAuto extends LinearOpMode {
                             hw.intake.setPower(-1);
                             sleep(1000);
                             hw.intake.setPower(0);
-                            currState = State.backboard;
+                            //currState = State.backboard;
                         }
                         break;
-
+/*
                     case backboard:
                         goNext = false;
                         goNext = true;
@@ -375,8 +375,8 @@ public class BlueLeftAuto extends LinearOpMode {
                         {
                             strafe(0.4, 500);
                             sleep(30000);
-                        }
-                        break;
+                        }*/
+                    //break;
                 }
             }
 
