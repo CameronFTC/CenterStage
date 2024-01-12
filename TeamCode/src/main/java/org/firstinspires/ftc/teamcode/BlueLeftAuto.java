@@ -318,7 +318,7 @@ public class BlueLeftAuto extends LinearOpMode {
                 switch(currState)
                 {
                     case spike:
-                        splineMovement(-0.59, 0.225, -0.2562, 91, 7);
+                        //splineMovement(-0.81, -0.061, -0.2562, 88, 7);
                         //setLift(-1275, -0.4);
                         //outtakeExtend();
 
@@ -329,6 +329,10 @@ public class BlueLeftAuto extends LinearOpMode {
 
                         if(goNext)
                         {
+                            goStraightPID(500, 0.01, 0.000138138, 0.005, 2000, 1);
+                            splineMovement(0, -0.061, -0.2562, 88, 7);
+                            hw.intakeServo1.setPosition(0.325);
+                            hw.intakeServo2.setPosition(.675);
                             hw.intake.setPower(-1);
                             sleep(1000);
                             hw.intake.setPower(0);
