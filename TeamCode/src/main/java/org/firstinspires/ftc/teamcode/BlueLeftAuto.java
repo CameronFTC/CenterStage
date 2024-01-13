@@ -112,12 +112,12 @@ public class BlueLeftAuto extends LinearOpMode {
             else if(TSE >= 0 && TSE < 300)
             {
                 pos = "Middle";
-                currState = State.backboard;
+                currState = State.spike;
             }
             else if(TSE >= 150)
             {
                 pos = "Left";
-                currState = State.backboard;
+                currState = State.spike;
             }
         }
 
@@ -167,7 +167,7 @@ public class BlueLeftAuto extends LinearOpMode {
             {
                 switch(currState)
                 {
-                    case backboard:
+                    /*case backboard:
                         splineMovement(-0.525, 0.32, -0.3, 91, 4);
                         outtakeExtend();
                         setLift(-1325, -0.7);
@@ -178,27 +178,29 @@ public class BlueLeftAuto extends LinearOpMode {
                         {
                             currState = State.april;
                         }
-                        break;
+                        break;*/
 
                     case spike:
-                        goNext = false;
-                        hw.dropper.setPower(0);
-                        outtakeRetract();
-                        splineMovement(-0.205, -0.9, -0.4, 180, 3);//angle was 180
-                        setLift(0, 0.2);
+                        goNext = true;
 
-                        slidePos = 0;
+
+
 
                         if(goNext)
                         {
+                            goStraightPID(500, 0.01, 0.000138138, 0.005, 2000, 1);
+                            splineMovement(0, -0.061, -0.2562,  180, 7);
+                            //hw.intakeServo1.setPosition(0.325);
+                            //hw.intakeServo2.setPosition(.675);
                             hw.intake.setPower(-1);
-                            sleep(1000);
+                            sleep(300);
                             hw.intake.setPower(0);
-                            currState = State.backup;
+                            stopAll();
+                            sleep(30000);
                         }
                         break;
 
-                    case backup:
+                   /* case backup:
                         goNext = false;
                         goStraightPID(-200, 0.01, 0.000138138, 0.005, 2000, -0.4);
 
@@ -235,14 +237,14 @@ public class BlueLeftAuto extends LinearOpMode {
                             currState = State.spike;
                         }
 
-                        break;
+                        break;*/
                 }
             }
             else if(pos.equals("Left"))
             {
                 switch(currState)
                 {
-                    case backboard:
+                   /* case backboard:
                         splineMovement(-0.54, 0.38, -0.4, 91, 3);
                         outtakeExtend();
                         setLift(-1275, -0.7);
@@ -253,26 +255,32 @@ public class BlueLeftAuto extends LinearOpMode {
                         {
                             currState = State.april;
                         }
-                        break;
+                        break;*/
 
                     case spike:
-                        goNext = false;
-                        hw.dropper.setPower(0);
+                        goNext = true;
+                        /*hw.dropper.setPower(0);
                         outtakeRetract();
-                        splineMovement(-0.1, -0.37, -0.5, 180, 3);//angle was 180
+                        splineMovement(-0.1, -0.37, -0.5, 180, 3);//angle was 180*/
+
 
                         slidePos = 0;
 
                         if(goNext)
                         {
+                            goStraightPID(500, 0.01, 0.000138138, 0.005, 2000, 1);
+                            splineMovement(0, -0.061, -0.2562, -88, 7);//change it to make it turn left
+                            //hw.intakeServo1.setPosition(0.325);
+                            //hw.intakeServo2.setPosition(.675);
                             hw.intake.setPower(-1);
-                            sleep(1000);
+                            sleep(300);
                             hw.intake.setPower(0);
-                            currState = State.backup;
+                            stopAll();
+                            sleep(30000);
                         }
                         break;
 
-                    case park:
+                   /* case park:
                         goNext = false;
                         setLift(0, 0.5);
                         splineMovement(0.24, .5, -0.4, 90, 5);
@@ -310,7 +318,7 @@ public class BlueLeftAuto extends LinearOpMode {
                         {
                             currState = State.park;
                         }
-                        break;
+                        break;*/
                 }
             }
             else if(pos.equals("Right"))
@@ -323,7 +331,7 @@ public class BlueLeftAuto extends LinearOpMode {
                         //outtakeExtend();
 
                         //slidePos = 500;
-
+                        goNext = true;
                         telemetry.addData("heading: ", heading);
                         telemetry.update();
 
@@ -331,11 +339,13 @@ public class BlueLeftAuto extends LinearOpMode {
                         {
                             goStraightPID(500, 0.01, 0.000138138, 0.005, 2000, 1);
                             splineMovement(0, -0.061, -0.2562, 88, 7);
-                            hw.intakeServo1.setPosition(0.325);
-                            hw.intakeServo2.setPosition(.675);
+                            //hw.intakeServo1.setPosition(0.325);
+                            //hw.intakeServo2.setPosition(.675);
                             hw.intake.setPower(-1);
-                            sleep(1000);
+                            sleep(300);
                             hw.intake.setPower(0);
+                            stopAll();
+                            sleep(30000);
                             //currState = State.backboard;
                         }
                         break;
