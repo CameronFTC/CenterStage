@@ -269,7 +269,7 @@ public class BlueLeftAuto extends LinearOpMode {
                         if(goNext)
                         {
                             goStraightPID(500, 0.01, 0.000138138, 0.005, 2000, 1);
-                            splineMovement(0, -0.061, -0.2562, -88, 7);//change it to make it turn left
+                            splineMovement(0, -0.061, -0.562, -88, 7);//change it to make it turn left
                             //hw.intakeServo1.setPosition(0.325);
                             //hw.intakeServo2.setPosition(.675);
                             hw.intake.setPower(-1);
@@ -338,7 +338,7 @@ public class BlueLeftAuto extends LinearOpMode {
                         if(goNext)
                         {
                             goStraightPID(500, 0.01, 0.000138138, 0.005, 2000, 1);
-                            splineMovement(0, -0.061, -0.2562, 88, 7);
+                            splineMovement(0, -0.062, -0.2565, 88, 7);//rotation-.565
                             //hw.intakeServo1.setPosition(0.325);
                             //hw.intakeServo2.setPosition(.675);
                             hw.intake.setPower(-1);

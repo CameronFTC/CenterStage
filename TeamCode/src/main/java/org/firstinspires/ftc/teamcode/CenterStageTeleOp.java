@@ -252,8 +252,8 @@ public class CenterStageTeleOp extends LinearOpMode {
         } else if (gamepad2.b) {
             //hw.intakeServo1.setPosition(0.5);
             //hw.intakeServo2.setPosition(0.51);
-            hw.intakeServo1.setPosition(0.325);
-            hw.intakeServo2.setPosition(.675);
+            hw.intakeServo1.setPosition(0.38);
+            hw.intakeServo2.setPosition(.7);
         }
     }
 
