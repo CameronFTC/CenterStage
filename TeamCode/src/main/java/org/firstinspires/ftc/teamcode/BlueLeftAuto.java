@@ -338,34 +338,38 @@ public class BlueLeftAuto extends LinearOpMode {
                         if(goNext)
                         {
                             goStraightPID(500, 0.01, 0.000138138, 0.005, 2000, 1);
-                            splineMovement(0, -0.062, -0.2565, 88, 7);//rotation-.565
+                            //splineMovement(0, -0.062, -0.2565, 88, 7);//rotation-.565
                             //hw.intakeServo1.setPosition(0.325);
                             //hw.intakeServo2.setPosition(.675);
+                            //hw.intake.setPower(-1);
+                            //sleep(300);
+                            //hw.intake.setPower(0);
+                            //stopAll();
+                            //sleep(30000);
+                            currState = State.backboard;
+                        }
+                        break;
+
+                    case backboard:
+                        goNext = false;
+
+                        splineMovement(0, -0.062, -0.2565, 88, 7);
+                        if(goNext)
+                        {
                             hw.intake.setPower(-1);
                             sleep(300);
                             hw.intake.setPower(0);
-                            stopAll();
                             sleep(30000);
-                            //currState = State.backboard;
-                        }
-                        break;
-/*
-                    case backboard:
-                        goNext = false;
-                        goNext = true;
-
-                        if(goNext)
-                        {
-                            goStraightPID(-1320, 0.01, 0.00138138, 0.05, 4000, -0.7);
+                            /*goStraightPID(-1320, 0.01, 0.00138138, 0.05, 4000, -0.7);
                             sleep(1000);
                             strafe(0.4, 300);
                             hw.dropper.setPower(0.3);
                             sleep(1000);
                             hw.dropper.setPower(0);
-                            currState = State.park;
+                            currState = State.park;*/
                         }
                         break;
-
+/*
                     case park:
                         goNext = false;
                         outtakeRetract();
