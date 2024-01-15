@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.util;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -8,22 +8,20 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.teamcode.AprilTag;
 import org.firstinspires.ftc.teamcode.OpenCV.CVMaster;
-import org.firstinspires.ftc.teamcode.OpenCV.ConceptAprilTag;
 import org.firstinspires.ftc.teamcode.OpenCV.StickObserverPipeline;
+import org.firstinspires.ftc.teamcode.RobotOrientation;
+import org.firstinspires.ftc.teamcode.hwMap;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "Blue Left Auto", group = "Autonomous")
-public class BlueLeftAuto extends LinearOpMode {
+@Autonomous(name = "Red Left Auto3", group = "Autonomous")
+public class RedLeftAuto3 extends LinearOpMode {
     private IMU imu;
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
@@ -92,7 +90,7 @@ public class BlueLeftAuto extends LinearOpMode {
         //vision
         String pos = "Middle";
 
-        CVMaster cv = new CVMaster(this, "Blue");
+        CVMaster cv = new CVMaster(this, "Red");
 //      call the function to startStreaming
         cv.observeStick();
         counter = 0;
@@ -103,24 +101,21 @@ public class BlueLeftAuto extends LinearOpMode {
             telemetry.addData("Pos: ", pos);
             telemetry.update();
 
+
             double TSE = StickObserverPipeline.xCoord;
-            //pos = "Right";
-            if(StickObserverPipeline.maxContour < 500)
-            {
-                pos = "Right";
-                currState = State.spike;
-            }
-            else if(TSE >= 0 && TSE < 300)
+
+            if(TSE > 0 && TSE < 150)
             {
                 pos = "Left";
-                currState = State.spike;
             }
-            else if(TSE >= 150)
+            else if(TSE >= 150 && TSE < 400)
             {
-                pos = "Middle";
-                currState = State.spike;
+                pos = "Right";
             }
-            //pos = "Right";
+            else if(TSE >= 400)
+            {
+                pos = "Right";
+            }
         }
 
 
@@ -188,7 +183,7 @@ public class BlueLeftAuto extends LinearOpMode {
 
 
 
-                       /* if(goNext)
+                        if(goNext)
                         {
                             goStraightPID(500, 0.01, 0.000138138, 0.005, 2000, 1);
                             splineMovement(0, -0.061, -0.2562,  180, 7);
@@ -201,8 +196,7 @@ public class BlueLeftAuto extends LinearOpMode {
                             hw.intake.setPower(0);
                             stopAll();
                             sleep(30000);
-                        }*/
-                        sleep(30000);
+                        }
                         break;
 
                    /* case backup:
@@ -264,30 +258,12 @@ public class BlueLeftAuto extends LinearOpMode {
 
                     case spike:
                         goNext = true;
-                        telemetry.addData("heading: ", heading);
-                        telemetry.update();
-
-                        if(goNext)
-                        {
-                            if(counter == 0){
-                                goStraightPID(650, 0.01, 0.000138138, 0.005, 2000, 1);//hi
-                            }
-                            splineMovement(0, -0.0621, 0.25, -83, 7);
-                            counter++;
-                            if(counter == 1 ){
-                                hw.intake.setPower(-1);
-                                sleep(1000);
-                                hw.intake.setPower(0);}
-                            if(counter > 1 ){
-                                goStraightPID(-50, 0.01, 0.000138138, 0.005, 2000, 1);
-                                sleep(30000);}}
-                        /*goNext = true;
                         /*hw.dropper.setPower(0);
                         outtakeRetract();
                         splineMovement(-0.1, -0.37, -0.5, 180, 3);//angle was 180*/
 
 
-                        /*slidePos = 0;
+                        slidePos = 0;
 
                         if(goNext)
                         {
@@ -300,7 +276,7 @@ public class BlueLeftAuto extends LinearOpMode {
                             hw.intake.setPower(0);
                             stopAll();
                             sleep(30000);
-                        }*/
+                        }
                         break;
 
                    /* case park:
@@ -356,6 +332,7 @@ public class BlueLeftAuto extends LinearOpMode {
                         //slidePos = 500;
                         goNext = true;
                         telemetry.addData("heading: ", heading);
+                        telemetry.addData("counter", counter);
                         telemetry.update();
 
                         if(goNext)
@@ -363,7 +340,7 @@ public class BlueLeftAuto extends LinearOpMode {
                             if(counter == 0){
                                 goStraightPID(630, 0.01, 0.000138138, 0.005, 2000, 1);//hi
                             }
-                            splineMovement(0, -0.0621, -0.252, 83, 7);
+                            splineMovement(0, -0.0624, -0.25, 83, 7);
                             counter++;
                             if(counter == 1 ){
                                 hw.intake.setPower(-1);
