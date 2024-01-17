@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 
@@ -16,6 +17,7 @@ public class CenterStageTeleOp extends LinearOpMode {
     double startAngle;
     double slidePos = 0;
     double currSlidePos = 0;
+    ColorSensor color;
 
     public enum liftHeight {
         none,
@@ -32,6 +34,8 @@ public class CenterStageTeleOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         hw = new hwMap(this);
         imu = hardwareMap.get(IMU.class, "imu");
+
+        color = hardwareMap.get(ColorSensor.class, "Color");
 
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
@@ -67,6 +71,12 @@ public class CenterStageTeleOp extends LinearOpMode {
             outakeMove();
             dropper();
             droneLaunch();
+
+            telemetry.addData("Red", color.red());
+            telemetry.addData("Green", color.green());
+            telemetry.addData("Blue", color.blue());
+
+            telemetry.update();
 
             if (gamepad1.a) {
                 currLift = liftHeight.retract;
