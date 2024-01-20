@@ -26,6 +26,7 @@ import java.util.List;
 @Disabled
 @Autonomous(name = "Red Right", group = "Autonomous")
 public class RedRightAuto extends LinearOpMode {
+
     private IMU imu;
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
@@ -175,6 +176,7 @@ public class RedRightAuto extends LinearOpMode {
                 switch(currState)
                 {
                     case backboard:
+
                         goNext = false;
                         //splineMovement(0.48, -0.42, 0.6, -91, 1);
                         goStraightPID(-200, 0.01, 0.000138138, 0.005, 4000, -0.5);
@@ -317,7 +319,7 @@ public class RedRightAuto extends LinearOpMode {
 
     //methods
 
-    private void splineMovement(double yPwr, double xPwr, double rotation, double finalAngle, double leniency)
+    private void splineMovement(double yPwr, double xPwr, double rotation,double finalAngle, double leniency)
     {
         double y = -yPwr;
         double x = xPwr;
