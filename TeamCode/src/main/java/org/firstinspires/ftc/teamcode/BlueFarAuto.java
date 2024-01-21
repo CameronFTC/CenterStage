@@ -2,20 +2,14 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.OpenCV.CVMaster;
-import org.firstinspires.ftc.teamcode.OpenCV.ConceptAprilTag;
 import org.firstinspires.ftc.teamcode.OpenCV.StickObserverPipeline;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -23,15 +17,15 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@Disabled
-@Autonomous(name = "Red Right", group = "Autonomous")
-public class Redfar extends LinearOpMode {
+@Autonomous(name = "Blue Left Auto", group = "Autonomous")
+public class BlueFarAuto extends LinearOpMode {
     private IMU imu;
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
 
     hwMap hw;
     double angle;
+    int counter = 0;
     double startAngle;
     double heading;
     double liftStart;
@@ -39,32 +33,34 @@ public class Redfar extends LinearOpMode {
 
     double slidePos = 0;
     boolean goNext = false;
-    boolean aprilFound = true;
 
     enum State {
         spike,
         backboard,
         park,
         april,
+        backup,
+        stop,
     }
 
     final int DESIRED_DISTANCE = 3;
     int DESIRED_TAG_ID = 4;
-    final double SPEED_GAIN  =  0.02  ;   //  0.02 Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN =  0.015 ;   // 0.015 Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-    final double TURN_GAIN   =  0.4  ;   //  0.01 Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double SPEED_GAIN  =  0  ;   //  0.02 Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN =  -0.1 ;   // 0.015 Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+    final double TURN_GAIN   =  0  ;   //  0.01 Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
     private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
 
-    private State currState = State.backboard;
     AprilTag april;
     boolean targetFound;
     double drive;
     double strafe;
     double turn;
+
+    private State currState = State.backboard;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -88,42 +84,38 @@ public class Redfar extends LinearOpMode {
 
         liftStart = hw.lift2.getCurrentPosition();
 
-
-        intakeUp();
-
         //vision
         String pos = "Middle";
 
-        CVMaster cv = new CVMaster(this, "Red");
+        CVMaster cv = new CVMaster(this, "Blue");
 //      call the function to startStreaming
         cv.observeStick();
-
+        counter = 0;
         while(!isStarted())
         {
             telemetry.addData("Coords: ", StickObserverPipeline.xCoord + " " + StickObserverPipeline.yCoord);
+            telemetry.addData("Area: ", StickObserverPipeline.maxContour);
             telemetry.addData("Pos: ", pos);
             telemetry.update();
 
             double TSE = StickObserverPipeline.xCoord;
-
-            if(TSE > 0 && TSE < 50)
-            {
-                pos = "Left";
-                currState = State.spike;
-                DESIRED_TAG_ID = 4;
-            }
-            else if(TSE >= 50 && TSE < 400)
-            {
-                pos = "Middle";
-                currState = State.spike;
-                DESIRED_TAG_ID = 5;
-            }
-            else if(TSE >= 400)
+            //pos = "Right";
+            if(StickObserverPipeline.maxContour < 500)
             {
                 pos = "Right";
                 currState = State.spike;
-                DESIRED_TAG_ID = 6;
             }
+            else if(TSE >= 0 && TSE < 300)
+            {
+                pos = "Left";
+                currState = State.spike;
+            }
+            else if(TSE >= 150)
+            {
+                pos = "Middle";
+                currState = State.spike;
+            }
+            //pos = "Right";
         }
 
 
@@ -142,27 +134,24 @@ public class Redfar extends LinearOpMode {
         // Build the Vision Portal, using the above settings.
         visionPortal = builder.build();*/
 
-        targetFound     = false;    // Set to true when an AprilTag target is detected
-        drive           = 0;        // Desired forward power/speed (-1 to +1)
-        strafe          = 0;        // Desired strafe power/speed (-1 to +1)
-        turn            = 0;        // Desired turning power/speed (-1 to +1)
+        RobotOrientation.red = false;
+        hw.droneLauncher.setPosition(0.65);
+        intakeUp();
 
         waitForStart();
 
         imu.resetYaw();
         cv.stopCamera();
+        //pos = "Right";
+        //currState = State.spike;
 
         april = new AprilTag(this);
 
-        pos = "Middle";
-        DESIRED_TAG_ID = 5;
-        //currState = State.spike;
+        //pos = "Middle";
+        //currState = State.backboard;
         while(opModeIsActive() && !isStopRequested())
         {
             //imu.resetYaw();
-
-            april.telemetryAprilTag();
-            telemetry.update();
 
             slidePos = 0;
             heading = hw.getAngle();
@@ -175,134 +164,270 @@ public class Redfar extends LinearOpMode {
             {
                 switch(currState)
                 {
-                    case backboard:
+                    /*case backboard:
+                        splineMovement(-0.525, 0.32, -0.3, 91, 4);
+                        outtakeExtend();
+                        setLift(-1325, -0.7);
+
+                        slidePos = 500;
+
+                        if(goNext)
+                        {
+                            currState = State.april;
+                        }
+                        break;*/
+
+                    case spike:
+                        goNext = true;
+
+
+
+
+                       /* if(goNext)
+                        {
+                            goStraightPID(500, 0.01, 0.000138138, 0.005, 2000, 1);
+                            splineMovement(0, -0.061, -0.2562,  180, 7);
+
+
+                            //hw.intakeServo1.setPosition(0.325);
+                            //hw.intakeServo2.setPosition(.675);
+                            hw.intake.setPower(-1);
+                            sleep(300);
+                            hw.intake.setPower(0);
+                            stopAll();
+                            sleep(30000);
+                        }*/
+                        sleep(30000);
+                        break;
+
+                   /* case backup:
                         goNext = false;
-                        //splineMovement(0.48, -0.42, 0.6, -91, 1);
-                        goStraightPID(-200, 0.01, 0.000138138, 0.005, 4000, -0.5);
+                        goStraightPID(-200, 0.01, 0.000138138, 0.005, 2000, -0.4);
 
                         goNext = true;
 
                         if(goNext)
                         {
-                            outtakeExtend();
-                            currState = State.april;
+                            currState = State.park;
                         }
                         break;
 
-                    case spike:
+                    case park:
                         goNext = false;
-                        //splineMovement(-0.05, 0.68, 0.2, 180, 2);
-                        //setLift(0, 0.7);
-                        splineMovement(0.425, -0.05, 0.63, -115, 3);
-
-                        slidePos = 0;
+                        splineMovement(-0.3, 0.8, -0.6, 91, 5);
 
                         if(goNext)
                         {
-                            hw.autoIntake(-1, 1);
-                            currState = State.backboard;
+                            sleep(30000);
                         }
+
                         break;
 
                     case april:
                         goNext = false;
+                        //aprilTagAdjust();
 
-                        //setLift(-500, -0.7);
-
-                        aprilTagAdjust();
-
-                        slidePos = 500;
+                        goNext = true;
 
                         if(goNext)
                         {
-                            goStraightPID(-300, 0.01, 0.000138138, 0.005, 4000, -0.5);
-                            hw.liftTimer(-0.7, 1);
-
-                            currState = State.park;
-                        }
-                        break;
-
-                    case park:
-                        //hw.autoIntake(-1, 5);
-                        splineMovement(0, -0.03, -0.1, -89, 1);
-                        //hw.autoDrop(1, 1);
-
-                        //outtakeRetract();
-                        sleep(30000);
-                        break;
-                }
-            }
-            else if(pos.equals("Right"))
-            {
-                switch(currState)
-                {
-                    case backboard:
-                        splineMovement(0.27, -0.34, 0.6, -91, 1);
-                        setLift(-500, -0.7);
-
-                        slidePos = 500;
-
-                        if(goNext)
-                        {
-                            sleep(2000);
+                            goStraightPID(-450, 0.01, 0.000138138, 0.005, 2000, -0.3);
+                            hw.dropper.setPower(0.3);
+                            sleep(1000);
                             currState = State.spike;
                         }
-                        break;
 
-                    case spike:
-                        goNext = false;
-                        splineMovement(0, 0.54, 0.2, 180, 2);
-                        setLift(0, 0.7);
-
-                        slidePos = 0;
-
-                        if(goNext)
-                        {
-                            sleep(1000);
-                            currState = State.park;
-                        }
-                        break;
-
-                    case park:
-                        //hw.autoIntake(-1, 5);
-                        sleep(30000);
+                        break;*/
                 }
             }
             else if(pos.equals("Left"))
             {
                 switch(currState)
                 {
-                    case spike:
-                        splineMovement(0.53, 0.13, 0.6, -91, 1);
-                        setLift(-500, -0.7);
+                   /* case backboard:
+                        splineMovement(-0.54, 0.38, -0.4, 91, 3);
+                        outtakeExtend();
+                        setLift(-1275, -0.7);
 
                         slidePos = 500;
 
+                        if(goNext)
+                        {
+                            currState = State.april;
+                        }
+                        break;*/
+
+                    case spike:
+                        goNext = true;
                         telemetry.addData("heading: ", heading);
                         telemetry.update();
 
                         if(goNext)
                         {
+                            if(counter == 0){
+                                goStraightPID(650, 0.01, 0.000138138, 0.005, 2000, 1);//hi
+                            }
+                            splineMovement(0, -0.0621, 0.25, -83, 7);
+                            counter++;
+                            if(counter == 1 ){
+                                hw.intake.setPower(-1);
+                                sleep(1000);
+                                hw.intake.setPower(0);}
+                            if(counter > 1 ){
+                                goStraightPID(-50, 0.01, 0.000138138, 0.005, 2000, 1);
+                                sleep(30000);}}
+                        /*goNext = true;
+                        /*hw.dropper.setPower(0);
+                        outtakeRetract();
+                        splineMovement(-0.1, -0.37, -0.5, 180, 3);//angle was 180*/
+
+
+                        /*slidePos = 0;
+
+                        if(goNext)
+                        {
+                            goStraightPID(500, 0.01, 0.000138138, 0.005, 2000, 1);
+                            splineMovement(0, -0.061, -0.562, -88, 7);//change it to make it turn left
+                            //hw.intakeServo1.setPosition(0.325);
+                            //hw.intakeServo2.setPosition(.675);
+                            hw.intake.setPower(-1);
+                            sleep(300);
+                            hw.intake.setPower(0);
+                            stopAll();
+                            sleep(30000);
+                        }*/
+                        break;
+
+                   /* case park:
+                        goNext = false;
+                        setLift(0, 0.5);
+                        splineMovement(0.24, .5, -0.4, 90, 5);
+
+                        if(goNext)
+                        {
+                            sleep(30000);
+                        }
+
+                        break;
+
+                    case april:
+                        goNext = false;
+                        //aprilTagAdjust();
+
+                        goNext = true;
+
+                        if(goNext)
+                        {
+                            goStraightPID(-380, 0.01, 0.000138138, 0.005, 2000, -0.3);
+                            hw.dropper.setPower(0.2);
                             sleep(1000);
-                            currState = State.backboard;
+                            currState = State.spike;
+                        }
+
+                        break;
+
+                    case backup:
+                        goNext = false;
+                        goStraightPID(-200, 0.01, 0.000138138, 0.005, 2000, -0.4);
+
+                        goNext = true;
+
+                        if(goNext)
+                        {
+                            currState = State.park;
+                        }
+                        break;*/
+                }
+            }
+            else if(pos.equals("Right"))
+            {
+                switch(currState)
+                {
+                    case spike:
+                        //splineMovement(-0.81, -0.061, -0.2562, 88, 7);
+                        //setLift(-1275, -0.4);
+                        //outtakeExtend();
+
+                        //slidePos = 500;
+                        goNext = true;
+                        telemetry.addData("heading: ", heading);
+                        telemetry.update();
+
+                        if(goNext)
+                        {
+                            if(counter == 0){
+                                goStraightPID(630, 0.01, 0.000138138, 0.005, 2000, 1);//hi
+                            }
+                            splineMovement(0, -0.0621, -0.252, 83, 7);
+                            counter++;
+                            if(counter == 1 ){
+                                hw.intake.setPower(-1);
+                                sleep(1000);
+                                hw.intake.setPower(0);}
+                            if(counter > 1 ){
+                                goStraightPID(50, 0.01, 0.000138138, 0.005, 2000, 1);
+                                sleep(30000);}
+                            //hw.intakeServo1.setPosition(0.325);
+                            //hw.intakeServo2.setPosition(.675);m
+
+                            //goStraightPID(500, 0.01, 0.000138138, 0.005, 2000, 1);
+                            //splineMovement(0, -0.062, -0.2565, 88, 7);//rotation-.565
+                            //hw.intakeServo1.setPosition(0.325);
+                            //hw.intakeServo2.setPosition(.675);
+                            //hw.intake.setPower(-1);
+                            //sleep(300);
+                            //hw.intake.setPower(0);
+                            //stopAll();
+                            //sleep(30000);
+                            //currState = State.backboard;
                         }
                         break;
 
                     case backboard:
                         goNext = false;
-                        goStraightPID(-1060, 0.01, 0.000138138, 0.005, 4000, -0.5);
+
+                        splineMovement(0, -0.012, -0.3565, 92, 16);
+                        if(goNext)
+                        {
+                            hw.intake.setPower(-1);
+                            sleep(300);
+                            hw.intake.setPower(0);
+                            sleep(30000);
+                            /*goStraightPID(-1320, 0.01, 0.00138138, 0.05, 4000, -0.7);
+                            sleep(1000);
+                            strafe(0.4, 300);
+                            hw.dropper.setPower(0.3);
+                            sleep(1000);
+                            hw.dropper.setPower(0);
+                            currState = State.park;*/
+                        }
+                        break;
+/*
+                    case park:
+                        goNext = false;
+                        outtakeRetract();
+
+                        goStraightPID(100, 0.01, 0.000138138, 0.005, 2000, 1);
+
                         goNext = true;
+
+                        //splineMovement(-0.5, 0, 0.6, 180, 3);
+                        if(goNext)
+                        {
+                            currState = State.stop;
+                        }
+
+                    case stop:
+                        goNext = false;
+                        setLift(0, 0.4);
+                        splineMovement(0.5, 0, -0.6, 90, 3);
 
                         if(goNext)
                         {
-                            sleep(1000);
-                            currState = State.park;
-                        }
-                        break;
-
-                    case park:
-                        //hw.autoIntake(-1, 5);
-                        sleep(30000);
+                            strafe(0.4, 500);
+                            sleep(30000);
+                        }*/
+                    //break;
                 }
             }
 
@@ -324,7 +449,7 @@ public class Redfar extends LinearOpMode {
         double x = xPwr;
         double rx = rotation;
 
-        double kP = 1 / finalAngle;
+        double kP = 1.75 / finalAngle;
 
         //double heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
 
@@ -332,7 +457,13 @@ public class Redfar extends LinearOpMode {
         {
             //heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
 
+            telemetry.addData("Heading: ", heading);
+            telemetry.update();
+
             double error = finalAngle - heading;
+
+            y *= (error * kP);
+            //x *= (error * kP);
 
             double rotX = x * Math.cos(Math.toRadians(-heading)) - y * Math.sin(Math.toRadians(-heading));
             double rotY = x * Math.sin(Math.toRadians(-heading)) + y * Math.cos(Math.toRadians(-heading));
@@ -539,8 +670,8 @@ public class Redfar extends LinearOpMode {
         if(Math.abs(target - currPos) > 75)
         {
             double error = target - currPos;
-            hw.lift2.setPower(pwr * kP * (error));
-            hw.lift.setPower(pwr * kP * (error));
+            hw.lift2.setPower(pwr * kP * (error) * 2);
+            hw.lift.setPower(pwr * kP * (error) * 2);
         }
         else
         {
@@ -548,8 +679,8 @@ public class Redfar extends LinearOpMode {
             hw.lift.setPower(0);
         }
 
-        telemetry.addData("lift: ", currPos);
-        telemetry.update();
+        //telemetry.addData("lift: ", currPos);
+        //telemetry.update();
     }
 
     public double getLiftPos()
@@ -560,62 +691,92 @@ public class Redfar extends LinearOpMode {
         return liftPos;
     }
 
+    public void intakeUp()
+    {
+        hw.intakeServo1.setPosition(1);
+        hw.intakeServo2.setPosition(0);
+    }
+
+    public void intakeDown()
+    {
+        hw.intakeServo1.setPosition(0.49);
+        hw.intakeServo2.setPosition(0.49);
+    }
+
+    public void outtakeExtend()
+    {
+        hw.outtake1.setPosition(1);
+
+    }
+
+    public void outtakeRetract()
+    {
+        hw.outtake1.setPosition(0);
+
+    }
+
     public void aprilTagAdjust()
     {
-        april.telemetryAprilTag();
-        telemetry.update();
+        ElapsedTime timer = new ElapsedTime();
+        double runtime = timer.seconds();
 
-        targetFound = false;
-        desiredTag  = null;
-
-        // Step through the list of detected tags and look for a matching tag
-        List<AprilTagDetection> currentDetections = april.getAprilTag().getDetections();
-        for (AprilTagDetection detection : currentDetections) {
-            if ((detection.metadata != null)
-                    && ((DESIRED_TAG_ID >= 0) || (detection.id == DESIRED_TAG_ID))  ){
-                targetFound = true;
-                desiredTag = detection;
-                break;  // don't look any further.
-            }
-        }
-
-        // Tell the driver what we see, and what to do.
-        if (targetFound) {
-            telemetry.addData(">","HOLD Left-Bumper to Drive to Target\n");
-            telemetry.addData("Target", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
-            telemetry.addData("Range",  "%5.1f inches", desiredTag.ftcPose.range);
-            telemetry.addData("Bearing","%3.0f degrees", desiredTag.ftcPose.bearing);
-            telemetry.addData("Yaw","%3.0f degrees", desiredTag.ftcPose.yaw);
-        } else {
-            telemetry.addData(">","Drive using joystick to find target\n");
-        }
-
-        // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
-        if (targetFound) {
-
-            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-            double  rangeError      = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
-            double  headingError    = desiredTag.ftcPose.bearing * -1;
-            double  yawError        = desiredTag.ftcPose.yaw;
-
-            // Use the speed and turn "gains" to calculate how we want the robot to move.
-            drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-            turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
-            strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
-
-            telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-        }
-        else
+        while(runtime < 2)
         {
-            drive = 0;
-            strafe = 0;
-            turn = 0;
+            april.telemetryAprilTag();
+            telemetry.update();
 
-            goNext = true;
+            targetFound = false;
+            desiredTag  = null;
+
+            // Step through the list of detected tags and look for a matching tag
+            List<AprilTagDetection> currentDetections = april.getAprilTag().getDetections();
+            for (AprilTagDetection detection : currentDetections) {
+                if ((detection.metadata != null)
+                        && ((DESIRED_TAG_ID >= 0) || (detection.id == DESIRED_TAG_ID))  ){
+                    targetFound = true;
+                    desiredTag = detection;
+                    break;  // don't look any further.
+                }
+            }
+
+            // Tell the driver what we see, and what to do.
+            if (targetFound) {
+                telemetry.addData(">","HOLD Left-Bumper to Drive to Target\n");
+                telemetry.addData("Target", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
+                telemetry.addData("Range",  "%5.1f inches", desiredTag.ftcPose.range);
+                telemetry.addData("Bearing","%3.0f degrees", desiredTag.ftcPose.bearing);
+                telemetry.addData("Yaw","%3.0f degrees", desiredTag.ftcPose.yaw);
+            } else {
+                telemetry.addData(">","Drive using joystick to find target\n");
+            }
+
+            // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
+            if (targetFound) {
+
+                // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+                double  rangeError      = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
+                double  headingError    = desiredTag.ftcPose.bearing * -1;
+                double  yawError        = desiredTag.ftcPose.yaw;
+
+                // Use the speed and turn "gains" to calculate how we want the robot to move.
+                drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+                strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+
+                telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            }
+            else
+            {
+                drive = 0;
+                strafe = 0;
+                turn = 0;
+            }
+
+            moveRobot(drive, strafe, turn);
+            telemetry.update();
+
+            runtime = timer.seconds();
         }
-
-        moveRobot(drive, strafe, turn);
-        telemetry.update();
     }
 
     public void moveRobot(double x, double y, double yaw) {
@@ -644,26 +805,24 @@ public class Redfar extends LinearOpMode {
         hw.bR.setPower(rightBackPower);
     }
 
-    public void intakeUp()
+    public void strafe(double pwr, double distance)
     {
-        hw.intakeServo1.setPosition(1);
-        hw.intakeServo2.setPosition(0);
-    }
+        double startPos = hw.fL.getCurrentPosition();
+        double currentPos = 0;
 
-    public void intakeDown()
-    {
-        hw.intakeServo1.setPosition(0.49);
-        hw.intakeServo2.setPosition(0.49);
-    }
+        while(Math.abs(currentPos - distance) > 10)
+        {
+            telemetry.addData("currPos: ", currentPos);
+            telemetry.update();
 
-    public void outtakeExtend()
-    {
-        hw.outtake1.setPosition(1);
+            hw.fL.setPower(pwr);
+            hw.bL.setPower(-pwr * 1.08);
+            hw.fR.setPower(-pwr);
+            hw.bR.setPower(pwr * 1.08);
 
-    }
+            currentPos = hw.fL.getCurrentPosition() - startPos;
+        }
 
-    public void outtakeRetract()
-    {
-        hw.outtake1.setPosition(0);
+        stopAll();
     }
 }
