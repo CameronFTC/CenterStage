@@ -29,6 +29,21 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
             double RtoG = color.red() / color.green();
             double GtoB = color.green() / color.blue();
             double BtoR = color.blue() / color.red();
+            if(color.red() < 100 && color.green() < 100 && color.blue() < 100){
+                col = "nothing";
+            }
+            else if(RtoG < .6){
+                col = "green";
+            }
+            else if(color.red() > 1500 && color.green() > 1500 && color.blue() > 1500){
+                col = "white";
+            }
+            else if(BtoR > 1.3){
+                col = "purple";
+            }
+            else{
+                col = "yellow";
+            }
 
 
             telemetry.addData("Red", color.red());
@@ -37,6 +52,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
             telemetry.addData("RtoG", RtoG);
             telemetry.addData("GtoB", GtoB);
             telemetry.addData("BtoR", BtoR);
+            telemetry.addData("Color", col);
+
+
 
             telemetry.update();
         }
