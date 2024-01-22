@@ -43,6 +43,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
             }
             else if(RtoG < .6) {
                 col = "green";
+                //ham
                 lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
             }
             else if(BtoR > 1.3){
