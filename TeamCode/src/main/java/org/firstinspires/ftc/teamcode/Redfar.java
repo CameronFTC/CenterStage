@@ -29,7 +29,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 
 @Disabled
-@Autonomous(name = "Red Right", group = "Autonomous")
+@Autonomous(name = "Red Far", group = "Autonomous")
 public class Redfar extends LinearOpMode {
 
 

@@ -26,9 +26,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
             //yellow R786 G620 B284 to R1783 G1499 B662
             //purple R1122 G1286 B1520
             String col = "";
-            double RtoG = color.red() / color.green();
-            double GtoB = color.green() / color.blue();
-            double BtoR = color.blue() / color.red();
+            double RtoG = (double)color.red() / (double)color.green();
+            double GtoB = (double)color.green() / (double)color.blue();
+            double BtoR = (double)color.blue() / (double)color.red();
             if(color.red() < 100 && color.green() < 100 && color.blue() < 100){
                 col = "nothing";
             }
