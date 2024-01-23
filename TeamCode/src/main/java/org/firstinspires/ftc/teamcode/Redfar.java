@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -17,6 +20,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.OpenCV.CVMaster;
 import org.firstinspires.ftc.teamcode.OpenCV.ConceptAprilTag;
 import org.firstinspires.ftc.teamcode.OpenCV.StickObserverPipeline;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -25,7 +30,12 @@ import java.util.List;
 
 @Disabled
 @Autonomous(name = "Red far", group = "Autonomous")
+@Autonomous(name = "Red Far", group = "Autonomous")
 public class Redfar extends LinearOpMode {
+
+
+//    Pose2d startpos = new Pose2d(-38, 62, Math.toRadians(270));
+
     private IMU imu;
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
@@ -64,10 +74,30 @@ public class Redfar extends LinearOpMode {
     boolean targetFound;
     double drive;
     double strafe;
-    double turn;
+    double turn1;
 
     @Override
     public void runOpMode() throws InterruptedException {
+//        SampleMecanumDrive mecanumDrive = new SampleMecanumDrive(hardwareMap);
+//
+//        Pose2d startPose = (new Pose2d(-38, 62, Math.toRadians(270)));
+//        ElapsedTime timer = new ElapsedTime();
+//
+//        mecanumDrive.setPoseEstimate(startPose);
+//
+//        TrajectorySequence traj1 = mecanumDrive.trajectorySequenceBuilder(startPose)
+//                .forward(30)
+//                .build();
+//
+//        TrajectorySequence trajright = mecanumDrive.trajectorySequenceBuilder(traj1.end())
+//                .turn(Math.toRadians(45))
+//                .build();
+//
+//        TrajectorySequence trajmiddle = mecanumDrive.trajectorySequenceBuilder(traj1.end())
+//                .forward(5)
+//                .turn(10)
+//                .build();
+
         hw = new hwMap(this);
 
         imu = hardwareMap.get(IMU.class, "imu");
@@ -143,9 +173,9 @@ public class Redfar extends LinearOpMode {
         visionPortal = builder.build();*/
 
         targetFound     = false;    // Set to true when an AprilTag target is detected
-        drive           = 0;        // Desired forward power/speed (-1 to +1)
+        drive           = 0.0;        // Desired forward power/speed (-1 to +1)
         strafe          = 0;        // Desired strafe power/speed (-1 to +1)
-        turn            = 0;        // Desired turning power/speed (-1 to +1)
+        turn1            = 0;        // Desired turning power/speed (-1 to +1)
 
         waitForStart();
 
@@ -600,21 +630,21 @@ public class Redfar extends LinearOpMode {
 
             // Use the speed and turn "gains" to calculate how we want the robot to move.
             drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-            turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+            turn1   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
             strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-            telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn1);
         }
         else
         {
             drive = 0;
             strafe = 0;
-            turn = 0;
+            turn1 = 0;
 
             goNext = true;
         }
 
-        moveRobot(drive, strafe, turn);
+        moveRobot(drive, strafe, turn1);
         telemetry.update();
     }
 
