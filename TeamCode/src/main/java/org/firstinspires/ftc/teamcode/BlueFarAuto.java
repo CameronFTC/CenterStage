@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -12,8 +11,6 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.OpenCV.CVMaster;
 import org.firstinspires.ftc.teamcode.OpenCV.StickObserverPipeline;
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -22,10 +19,6 @@ import java.util.List;
 
 @Autonomous(name = "Blue far Auto", group = "Autonomous")
 public class BlueFarAuto extends LinearOpMode {
-@Autonomous(name = "Blue far", group = "Autonomous")
-public class Bluefar extends LinearOpMode {
-    //dah[d
-
     private IMU imu;
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
@@ -63,7 +56,7 @@ public class Bluefar extends LinearOpMode {
 
     AprilTag april;
     boolean targetFound;
-    double drive1;
+    double drive;
     double strafe;
     double turn;
 
@@ -71,31 +64,6 @@ public class Bluefar extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleMecanumDrive mecanumDrive = new SampleMecanumDrive(hardwareMap);
-
-        Pose2d startPose = (new Pose2d(-38, 62, Math.toRadians(270)));
-        ElapsedTime timer = new ElapsedTime();
-
-        mecanumDrive.setPoseEstimate(startPose);
-
-        TrajectorySequence traj1 = mecanumDrive.trajectorySequenceBuilder(startPose)
-                .forward(30)
-                .turn(Math.toRadians(90))
-                .build();
-//ifright
-        TrajectorySequence trajright = mecanumDrive.trajectorySequenceBuilder(traj1.end())
-                .turn(Math.toRadians(90))
-                .build();
-
-//ifmiddle
-        TrajectorySequence trajmiddle = mecanumDrive.trajectorySequenceBuilder(traj1.end())
-                .forward(18)
-                .build();
-//ifleft
-        TrajectorySequence trajleft = mecanumDrive.trajectorySequenceBuilder(traj1.end())
-                .turn(Math.toRadians(-90))
-                .build();
-
         hw = new hwMap(this);
 
         imu = hardwareMap.get(IMU.class, "imu");
@@ -123,7 +91,8 @@ public class Bluefar extends LinearOpMode {
 //      call the function to startStreaming
         cv.observeStick();
         counter = 0;
-        while (!isStarted()) {
+        while(!isStarted())
+        {
             telemetry.addData("Coords: ", StickObserverPipeline.xCoord + " " + StickObserverPipeline.yCoord);
             telemetry.addData("Area: ", StickObserverPipeline.maxContour);
             telemetry.addData("Pos: ", pos);
@@ -131,17 +100,22 @@ public class Bluefar extends LinearOpMode {
 
             double TSE = StickObserverPipeline.xCoord;
             //pos = "Right";
-            if (StickObserverPipeline.maxContour < 500) {
+            if(StickObserverPipeline.maxContour < 500)
+            {
                 pos = "Right";
                 currState = State.spike;
-            } else if (TSE >= 0 && TSE < 300) {
+            }
+            else if(TSE >= 0 && TSE < 300)
+            {
                 pos = "Left";
                 currState = State.spike;
-            } else if (TSE >= 150) {
+            }
+            else if(TSE >= 150)
+            {
                 pos = "Middle";
                 currState = State.spike;
             }
-            pos = "Left";
+            //pos = "Right";
         }
 
 
@@ -158,9 +132,7 @@ public class Bluefar extends LinearOpMode {
         builder.addProcessor(aprilTag);
 
         // Build the Vision Portal, using the above settings.
-        visionPortal = builder.build();
-
-         */
+        visionPortal = builder.build();*/
 
         RobotOrientation.red = false;
         hw.droneLauncher.setPosition(0.65);
@@ -170,42 +142,305 @@ public class Bluefar extends LinearOpMode {
 
         imu.resetYaw();
         cv.stopCamera();
+        //pos = "Right";
         //currState = State.spike;
 
         april = new AprilTag(this);
 
         //pos = "Middle";
         //currState = State.backboard;
-        //while (opModeIsActive() && !isStopRequested()) {
-        if(!isStopRequested()) {
+        while(opModeIsActive() && !isStopRequested())
+        {
             //imu.resetYaw();
 
             slidePos = 0;
             heading = hw.getAngle();
             RobotOrientation.angle = heading;
 
-
             //telemetry.addData("heading: ", heading);
             //telemetry.update();
 
-            if (pos.equals("Left")) {
-                //telemetry.addLine("before first 1");
-                //telemetry.update();
-                mecanumDrive.followTrajectorySequenceAsync(traj1);
-//                telemetry.addLine("before traj 2");
-//                telemetry.update();
-//               // mecanumDrive.followTrajectorySequenceAsync(trajleft);
-//                telemetry.addLine("After traj 2");
-//                telemetry.update();
-                hw.autoIntake(-1, 5);
-//                sleep(1000);
-//                hw.intake.setPower(0);
-                //hi
+            if(pos.equals("Middle"))
+            {
+                switch(currState)
+                {
+                    /*case backboard:
+                        splineMovement(-0.525, 0.32, -0.3, 91, 4);
+                        outtakeExtend();
+                        setLift(-1325, -0.7);
+
+                        slidePos = 500;
+
+                        if(goNext)
+                        {
+                            currState = State.april;
+                        }
+                        break;*/
+
+                    case spike:
+                        goNext = true;
+
+
+
+
+                       /* if(goNext)
+                        {
+                            goStraightPID(500, 0.01, 0.000138138, 0.005, 2000, 1);
+                            splineMovement(0, -0.061, -0.2562,  180, 7);
+
+
+                            //hw.intakeServo1.setPosition(0.325);
+                            //hw.intakeServo2.setPosition(.675);
+                            hw.intake.setPower(-1);
+                            sleep(300);
+                            hw.intake.setPower(0);
+                            stopAll();
+                            sleep(30000);
+                        }*/
+                        sleep(30000);
+                        break;
+
+                   /* case backup:
+                        goNext = false;
+                        goStraightPID(-200, 0.01, 0.000138138, 0.005, 2000, -0.4);
+
+                        goNext = true;
+
+                        if(goNext)
+                        {
+                            currState = State.park;
+                        }
+                        break;
+
+                    case park:
+                        goNext = false;
+                        splineMovement(-0.3, 0.8, -0.6, 91, 5);
+
+                        if(goNext)
+                        {
+                            sleep(30000);
+                        }
+
+                        break;
+
+                    case april:
+                        goNext = false;
+                        //aprilTagAdjust();
+
+                        goNext = true;
+
+                        if(goNext)
+                        {
+                            goStraightPID(-450, 0.01, 0.000138138, 0.005, 2000, -0.3);
+                            hw.dropper.setPower(0.3);
+                            sleep(1000);
+                            currState = State.spike;
+                        }
+
+                        break;*/
+                }
+            }
+            else if(pos.equals("Left"))
+            {
+                switch(currState)
+                {
+                   /* case backboard:
+                        splineMovement(-0.54, 0.38, -0.4, 91, 3);
+                        outtakeExtend();
+                        setLift(-1275, -0.7);
+
+                        slidePos = 500;
+
+                        if(goNext)
+                        {
+                            currState = State.april;
+                        }
+                        break;*/
+
+                    case spike:
+                        goNext = true;
+                        telemetry.addData("heading: ", heading);
+                        telemetry.update();
+
+                        if(goNext)
+                        {
+                            if(counter == 0){
+                                goStraightPID(650, 0.01, 0.000138138, 0.005, 2000, 1);//hi
+                            }
+                            splineMovement(0, -0.0621, 0.25, -83, 7);
+                            counter++;
+                            if(counter == 1 ){
+                                hw.intake.setPower(-1);
+                                sleep(1000);
+                                hw.intake.setPower(0);}
+                            if(counter > 1 ){
+                                goStraightPID(-50, 0.01, 0.000138138, 0.005, 2000, 1);
+                                sleep(30000);}}
+                        /*goNext = true;
+                        /*hw.dropper.setPower(0);
+                        outtakeRetract();
+                        splineMovement(-0.1, -0.37, -0.5, 180, 3);//angle was 180*/
+
+
+                        /*slidePos = 0;
+
+                        if(goNext)
+                        {
+                            goStraightPID(500, 0.01, 0.000138138, 0.005, 2000, 1);
+                            splineMovement(0, -0.061, -0.562, -88, 7);//change it to make it turn left
+                            //hw.intakeServo1.setPosition(0.325);
+                            //hw.intakeServo2.setPosition(.675);
+                            hw.intake.setPower(-1);
+                            sleep(300);
+                            hw.intake.setPower(0);
+                            stopAll();
+                            sleep(30000);
+                        }*/
+                        break;
+
+                   /* case park:
+                        goNext = false;
+                        setLift(0, 0.5);
+                        splineMovement(0.24, .5, -0.4, 90, 5);
+
+                        if(goNext)
+                        {
+                            sleep(30000);
+                        }
+
+                        break;
+
+                    case april:
+                        goNext = false;
+                        //aprilTagAdjust();
+
+                        goNext = true;
+
+                        if(goNext)
+                        {
+                            goStraightPID(-380, 0.01, 0.000138138, 0.005, 2000, -0.3);
+                            hw.dropper.setPower(0.2);
+                            sleep(1000);
+                            currState = State.spike;
+                        }
+
+                        break;
+
+                    case backup:
+                        goNext = false;
+                        goStraightPID(-200, 0.01, 0.000138138, 0.005, 2000, -0.4);
+
+                        goNext = true;
+
+                        if(goNext)
+                        {
+                            currState = State.park;
+                        }
+                        break;*/
+                }
+            }
+            else if(pos.equals("Right"))
+            {
+                switch(currState)
+                {
+                    case spike:
+                        //splineMovement(-0.81, -0.061, -0.2562, 88, 7);
+                        //setLift(-1275, -0.4);
+                        //outtakeExtend();
+
+                        //slidePos = 500;
+                        goNext = true;
+                        telemetry.addData("heading: ", heading);
+                        telemetry.update();
+
+                        if(goNext)
+                        {
+                            if(counter == 0){
+                                goStraightPID(630, 0.01, 0.000138138, 0.005, 2000, 1);//hi
+                            }
+                            splineMovement(0, -0.0621, -0.252, 83, 7);
+                            counter++;
+                            if(counter == 1 ){
+                                hw.intake.setPower(-1);
+                                sleep(1000);
+                                hw.intake.setPower(0);}
+                            if(counter > 1 ){
+                                goStraightPID(50, 0.01, 0.000138138, 0.005, 2000, 1);
+                                sleep(30000);}
+                            //hw.intakeServo1.setPosition(0.325);
+                            //hw.intakeServo2.setPosition(.675);m
+
+                            //goStraightPID(500, 0.01, 0.000138138, 0.005, 2000, 1);
+                            //splineMovement(0, -0.062, -0.2565, 88, 7);//rotation-.565
+                            //hw.intakeServo1.setPosition(0.325);
+                            //hw.intakeServo2.setPosition(.675);
+                            //hw.intake.setPower(-1);
+                            //sleep(300);
+                            //hw.intake.setPower(0);
+                            //stopAll();
+                            //sleep(30000);
+                            //currState = State.backboard;
+                        }
+                        break;
+
+                    case backboard:
+                        goNext = false;
+
+                        splineMovement(0, -0.012, -0.3565, 92, 16);
+                        if(goNext)
+                        {
+                            hw.intake.setPower(-1);
+                            sleep(300);
+                            hw.intake.setPower(0);
+                            sleep(30000);
+                            /*goStraightPID(-1320, 0.01, 0.00138138, 0.05, 4000, -0.7);
+                            sleep(1000);
+                            strafe(0.4, 300);
+                            hw.dropper.setPower(0.3);
+                            sleep(1000);
+                            hw.dropper.setPower(0);
+                            currState = State.park;*/
+                        }
+                        break;
+/*
+                    case park:
+                        goNext = false;
+                        outtakeRetract();
+
+                        goStraightPID(100, 0.01, 0.000138138, 0.005, 2000, 1);
+
+                        goNext = true;
+
+                        //splineMovement(-0.5, 0, 0.6, 180, 3);
+                        if(goNext)
+                        {
+                            currState = State.stop;
+                        }
+
+                    case stop:
+                        goNext = false;
+                        setLift(0, 0.4);
+                        splineMovement(0.5, 0, -0.6, 90, 3);
+
+                        if(goNext)
+                        {
+                            strafe(0.4, 500);
+                            sleep(30000);
+                        }*/
+                    //break;
+                }
             }
 
-        }
+            //adjust based on april tag
 
+            //goStraightPID(-110, 1 / 110, 0.000138138, 0.0005, 2000, -0.6);
+
+            //deposit
+
+            //sleep(30000);
+        }
     }
+
     //methods
 
     private void splineMovement(double yPwr, double xPwr, double rotation, double finalAngle, double leniency)
@@ -524,20 +759,20 @@ public class Bluefar extends LinearOpMode {
                 double  yawError        = desiredTag.ftcPose.yaw;
 
                 // Use the speed and turn "gains" to calculate how we want the robot to move.
-                drive1 = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
                 turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
                 strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive1, strafe, turn);
+                telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
             else
             {
-                drive1 = 0;
+                drive = 0;
                 strafe = 0;
                 turn = 0;
             }
 
-            moveRobot(drive1, strafe, turn);
+            moveRobot(drive, strafe, turn);
             telemetry.update();
 
             runtime = timer.seconds();
