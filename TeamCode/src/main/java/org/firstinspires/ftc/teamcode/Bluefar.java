@@ -198,6 +198,7 @@ public class Bluefar extends LinearOpMode {
                 hw.autoIntake(-1, 5);
 //                sleep(1000);
 //                hw.intake.setPower(0);
+                //hi
             }
 
         }
