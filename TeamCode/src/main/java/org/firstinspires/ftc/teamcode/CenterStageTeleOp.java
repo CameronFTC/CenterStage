@@ -60,7 +60,7 @@ public class CenterStageTeleOp extends LinearOpMode {
             }
             //
             //telemetry.addData("Angle: ", hw.getAngle());
-            telemetry.update();
+            //telemetry.update();
 
             //drive();
             robotCentric();
@@ -241,8 +241,7 @@ public class CenterStageTeleOp extends LinearOpMode {
         }
     }
 
-    private void dropper() {
-        hw.dropper.setPower(gamepad2.left_trigger - gamepad2.right_trigger);
+    private void dropper() {hw.dropper.setPower(gamepad2.left_trigger - gamepad2.right_trigger);
     }
 
     public void intakeServos() {

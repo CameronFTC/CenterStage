@@ -1,13 +1,13 @@
-/*package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;*/
 
-/*@TeleOp
-    public class Colorsensor extends LinearOpMode {
+@TeleOp
+    public class ColorsensorHR extends LinearOpMode {
     // Define a variable for our color sensor
     ColorSensor color;
     private RevBlinkinLedDriver lights;
@@ -69,4 +69,4 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;*/
             telemetry.update();
         }
     }
-}*/
+}
