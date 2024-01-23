@@ -17,7 +17,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "Blue Left Auto", group = "Autonomous")
+@Autonomous(name = "Blue far Auto", group = "Autonomous")
 public class BlueFarAuto extends LinearOpMode {
     private IMU imu;
     private AprilTagProcessor aprilTag;
