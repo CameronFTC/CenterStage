@@ -78,6 +78,7 @@ public class Bluefar extends LinearOpMode {
 
         TrajectorySequence traj1 = mecanumDrive.trajectorySequenceBuilder(startPose)
                 .forward(30)
+                .turn(Math.toRadians(90))
                 .build();
 //ifright
         TrajectorySequence trajright = mecanumDrive.trajectorySequenceBuilder(traj1.end())
@@ -138,7 +139,7 @@ public class Bluefar extends LinearOpMode {
                 pos = "Middle";
                 currState = State.spike;
             }
-            //pos = "Right";
+            pos = "Left";
         }
 
 
@@ -167,7 +168,6 @@ public class Bluefar extends LinearOpMode {
 
         imu.resetYaw();
         cv.stopCamera();
-        //pos = "Right";
         //currState = State.spike;
 
         april = new AprilTag(this);
@@ -181,20 +181,20 @@ public class Bluefar extends LinearOpMode {
             slidePos = 0;
             heading = hw.getAngle();
             RobotOrientation.angle = heading;
-            pos = "Left";
+
 
             //telemetry.addData("heading: ", heading);
             //telemetry.update();
 
             if (pos.equals("Left")) {
-                telemetry.addLine("before first 1");
-                telemetry.update();
-                mecanumDrive.followTrajectorySequence(traj1);
-                telemetry.addLine("before traj 2");
-                telemetry.update();
-                mecanumDrive.followTrajectorySequence(trajleft);
-                telemetry.addLine("After traj 2");
-                telemetry.update();
+                //telemetry.addLine("before first 1");
+                //telemetry.update();
+                mecanumDrive.followTrajectorySequenceAsync(traj1);
+//                telemetry.addLine("before traj 2");
+//                telemetry.update();
+//               // mecanumDrive.followTrajectorySequenceAsync(trajleft);
+//                telemetry.addLine("After traj 2");
+//                telemetry.update();
                 hw.autoIntake(-1, 5);
 //                sleep(1000);
 //                hw.intake.setPower(0);
