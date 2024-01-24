@@ -86,6 +86,8 @@ public class hwMap {
         bR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         fR.setDirection(DcMotorSimple.Direction.REVERSE);
         bR.setDirection(DcMotorSimple.Direction.REVERSE);
+        //fL.setDirection(DcMotorSimple.Direction.REVERSE);
+        //bL.setDirection(DcMotorSimple.Direction.REVERSE);
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
