@@ -94,11 +94,7 @@ public class CenterStageTeleOp extends LinearOpMode {
                 //hw.outtake2.setPosition(0.9);
             }
 
-            if (gamepad1.left_bumper) {
-                hw.dropper.setPower(1);
-            } else {
-                hw.dropper.setPower(0);
-            }
+
 
             /*switch(currLift)
             {
@@ -241,7 +237,17 @@ public class CenterStageTeleOp extends LinearOpMode {
         }
     }
 
-    private void dropper() {hw.dropper.setPower(gamepad2.left_trigger - gamepad2.right_trigger);
+    private void dropper() {
+        telemetry.addData("lt: ", gamepad2.left_trigger);
+        telemetry.addData("rt: ", gamepad2.right_trigger);
+        telemetry.update();
+
+        if(Math.abs(gamepad2.left_trigger - gamepad2.right_trigger) > .1){
+            hw.dropper.setPower(gamepad2.left_trigger - gamepad2.right_trigger);
+        }
+        else{
+            hw.dropper.setPower(0);
+        }
     }
 
     public void intakeServos() {
