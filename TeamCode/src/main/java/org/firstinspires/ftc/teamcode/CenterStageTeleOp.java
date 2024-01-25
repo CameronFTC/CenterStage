@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -18,6 +19,7 @@ public class CenterStageTeleOp extends LinearOpMode {
     double slidePos = 0;
     double currSlidePos = 0;
     ColorSensor color;
+    private RevBlinkinLedDriver lights;
 
     public enum liftHeight {
         none,
@@ -36,6 +38,7 @@ public class CenterStageTeleOp extends LinearOpMode {
         imu = hardwareMap.get(IMU.class, "imu");
 
         color = hardwareMap.get(ColorSensor.class, "Color");
+        lights = hardwareMap.get(RevBlinkinLedDriver.class,"Lights");
 
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
@@ -68,9 +71,10 @@ public class CenterStageTeleOp extends LinearOpMode {
             liftMove();
             intakeMove();
             intakeServos();
-            outakeMove();
+            //outakeMove();
             dropper();
             droneLaunch();
+            colors();
 
             telemetry.addData("Red", color.red());
             telemetry.addData("Green", color.green());
@@ -145,7 +149,48 @@ public class CenterStageTeleOp extends LinearOpMode {
         }
     }
     //}
+    private void colors(){
+        String col = "";
+        double RtoG = (double)color.red() / (double)color.green();
+        double GtoB = (double)color.green() / (double)color.blue();
+        double BtoR = (double)color.blue() / (double)color.red();
+        if(color.red() < 100 && color.green() < 100 && color.blue() < 100){
+            col = "nothing";
+            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BREATH_RED);
+        }
+        else if(RtoG < .6 ) {
+            col = "green";
+            //ham
+            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+        }
+        else if(GtoB < .9){
+            col = "purple";
+            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.VIOLET);
+        }
+        else if (BtoR < .6){
+            col = "yellow";
+            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+        }
+        else {
+            col = "white";
+            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE);
+        }
 
+
+       /* telemetry.addData("Red", color.red());
+        telemetry.addData("Green", color.green());
+        telemetry.addData("Blue", color.blue());
+        telemetry.addData("RtoG", RtoG);
+        telemetry.addData("GtoB", GtoB);
+        telemetry.addData("BtoR", BtoR);
+        telemetry.addData(":", lights.getConnectionInfo());*/
+        telemetry.addData("Color", col);
+
+        // lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+
+
+        telemetry.update();
+    }
     private void drive() {
         //normal
         hw.fL.setPower(-(-gamepad1.left_stick_y + gamepad1.left_stick_x + (gamepad1.right_stick_x)));

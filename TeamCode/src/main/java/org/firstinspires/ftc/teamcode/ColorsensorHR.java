@@ -18,6 +18,8 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
         color = hardwareMap.get(ColorSensor.class, "Color");
         lights = hardwareMap.get(RevBlinkinLedDriver.class,"Lights");
 
+
+
         // Wait for the Play button to be pressed
         waitForStart();
 
@@ -35,24 +37,24 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
             double BtoR = (double)color.blue() / (double)color.red();
             if(color.red() < 100 && color.green() < 100 && color.blue() < 100){
                 col = "nothing";
-                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
+                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BREATH_RED);
             }
-            else if(color.red() > 1500 && color.green() > 1500 && color.blue() > 1500){
-                col = "white";
-                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE);
-            }
-            else if(RtoG < .6) {
+            else if(RtoG < .6 ) {
                 col = "green";
                 //ham
                 lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
             }
-            else if(BtoR > 1.3){
+            else if(GtoB < .9){
                 col = "purple";
                 lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.VIOLET);
             }
-            else{
+            else if (BtoR < .6){
                 col = "yellow";
-                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
+                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+            }
+            else {
+                col = "white";
+                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE);
             }
 
 
@@ -62,8 +64,10 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
             telemetry.addData("RtoG", RtoG);
             telemetry.addData("GtoB", GtoB);
             telemetry.addData("BtoR", BtoR);
+            telemetry.addData(":", lights.getConnectionInfo());
             telemetry.addData("Color", col);
 
+           // lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
 
 
             telemetry.update();
