@@ -275,10 +275,10 @@ public class CenterStageTeleOp extends LinearOpMode {
     private void outakeMove() {
 
         if (gamepad2.left_bumper) {
-            hw.outtake1.setPosition(1);
+            //hw.outtake1.setPosition(1);
 
         } else if (gamepad2.right_bumper) {
-            hw.outtake1.setPosition(0);
+            //hw.outtake1.setPosition(0);
         }
     }
 
