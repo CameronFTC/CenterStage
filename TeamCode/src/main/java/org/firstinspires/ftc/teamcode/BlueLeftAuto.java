@@ -110,14 +110,15 @@ public class BlueLeftAuto extends LinearOpMode {
                 pos = "Right";
                 currState = State.spike;
             }
-            else if(TSE >= 0 && TSE < 300)
-            {
-                pos = "Left";
-                currState = State.spike;
-            }
-            else if(TSE >= 150)
+
+            else if(TSE >= 335)
             {
                 pos = "Middle";
+                currState = State.spike;
+            }
+            else if(TSE > 400)
+            {
+                pos = "Left";
                 currState = State.spike;
             }
             //pos = "Right";
@@ -344,6 +345,7 @@ public class BlueLeftAuto extends LinearOpMode {
                         break;*/
                 }
             }
+
             else if(pos.equals("Right"))
             {
                 switch(currState)
@@ -361,16 +363,20 @@ public class BlueLeftAuto extends LinearOpMode {
                         if(goNext)
                         {
                             if(counter == 0){
-                                goStraightPID(630, 0.01, 0.000138138, 0.005, 2000, 1);//hi
+                                goStraightPID(340, 0.01, 0.000138138, 0.005, 2000, 1);//hi
                             }
                             splineMovement(0, -0.0621, -0.252, 83, 7);
+
                             counter++;
+
                             if(counter == 1 ){
+                                //goStraightPID(-20, 0.01, 0.000138138, 0.005, 2000, 1);
                                 hw.intake.setPower(-1);
                                 sleep(1000);
                                 hw.intake.setPower(0);}
+                            counter++;
                             if(counter > 1 ){
-                                goStraightPID(50, 0.01, 0.000138138, 0.005, 2000, 1);
+                                goStraightPID(-50, 0.01, 0.000138138, 0.005, 2000, 1);
                                 sleep(30000);}
                             //hw.intakeServo1.setPosition(0.325);
                             //hw.intakeServo2.setPosition(.675);m
