@@ -6,7 +6,6 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -77,17 +76,14 @@ public class Bluefar extends LinearOpMode {
         Vector2d myVector = new Vector2d(10, -5);
 
 
-
         mecanumDrive.setPoseEstimate(startPose);
 
 
         TrajectorySequence traj1 = mecanumDrive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(startPose.getX(), startPose.getY()-40))
-                .build();
-                //.lineToLinearHeading(new Pose2d(0, 0, Math.toRadians(90)))
-                //.turn(Math.toRadians(30))
+                .splineTo(new Vector2d(-15, 5), Math.toRadians(0))
+                //.turn(Math.toRadians(-90))
                 //.forward(5)
-
+                .build();
 //ifright
 //            TrajectorySequence trajright = mecanumDrive.trajectorySequenceBuilder(traj1.end())
 //                    .turn(Math.toRadians(90))
@@ -197,11 +193,10 @@ public class Bluefar extends LinearOpMode {
             if (pos.equals("Left")) {
 
                 mecanumDrive.followTrajectorySequence(traj1);
-                hw.lift2.setPower(.2);
 
 //
-                slidePos = 100;
-                //sleep(1000);
+                hw.autoIntake(-1, 5);
+//                sleep(1000);
 //                hw.intake.setPower(0);
                 //hi
             }
