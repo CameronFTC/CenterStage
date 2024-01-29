@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -30,6 +31,8 @@ public class BlueLeftAuto extends LinearOpMode {
 
     hwMap hw;
     double angle;
+
+    private RevBlinkinLedDriver lights;
     int counter = 0;
     double startAngle;
     double heading;
@@ -72,6 +75,7 @@ public class BlueLeftAuto extends LinearOpMode {
         hw = new hwMap(this);
 
         imu = hardwareMap.get(IMU.class, "imu");
+        lights = hardwareMap.get(RevBlinkinLedDriver.class,"Lights");
 
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
@@ -98,6 +102,7 @@ public class BlueLeftAuto extends LinearOpMode {
         counter = 0;
         while(!isStarted())
         {
+            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
             telemetry.addData("Coords: ", StickObserverPipeline.xCoord + " " + StickObserverPipeline.yCoord);
             telemetry.addData("Area: ", StickObserverPipeline.maxContour);
             telemetry.addData("Pos: ", pos);
@@ -107,18 +112,18 @@ public class BlueLeftAuto extends LinearOpMode {
             //pos = "Right";
             if(StickObserverPipeline.maxContour < 500)
             {
-                pos = "Right";
+                pos = "Left";
                 currState = State.spike;
             }
 
-            else if(TSE >= 335)
+            else if(TSE <= 310)
             {
                 pos = "Middle";
                 currState = State.spike;
             }
-            else if(TSE > 400)
+            else if(TSE > 310)
             {
-                pos = "Left";
+                pos = "Right";
                 currState = State.spike;
             }
             //pos = "Right";
@@ -189,23 +194,49 @@ public class BlueLeftAuto extends LinearOpMode {
 
 
 
-                       /* if(goNext)
-                        {
-                            goStraightPID(500, 0.01, 0.000138138, 0.005, 2000, 1);
-                            splineMovement(0, -0.061, -0.2562,  180, 7);
-
-
-                            //hw.intakeServo1.setPosition(0.325);
-                            //hw.intakeServo2.setPosition(.675);
-                            hw.intake.setPower(-1);
-                            sleep(300);
-                            hw.intake.setPower(0);
-                            stopAll();
-                            sleep(30000);
-                        }*/
-                        sleep(30000);
-                        break;
-
+//                        goNext = true;
+//                        telemetry.addData("heading: ", heading);
+//                        telemetry.update();
+//
+//                        if(goNext)
+//                        {
+//                            if(counter == 0){
+//                                goStraightPID(600, 0.01, 0.000138138, 0.005, 2000, 1);//hi
+//                            }
+//                            //splineMovement(0, -0.0621, -0.252, -83, 7);
+//
+//                            counter++;
+//
+//                            if(counter == 1 ){
+//                                //goStraightPID(-20, 0.01, 0.000138138, 0.005, 2000, 1);
+//                                hw.intake.setPower(-1);
+//                                sleep(1000);
+//                                hw.intake.setPower(0);}
+//                            counter++;
+//                            if(counter > 1 ){
+//                                hw.intake.setPower(-1);
+//                                sleep(1000);
+//                                hw.intake.setPower(0);}
+//                            //goStraightPID(-50, 0.01, 0.000138138, 0.005, 2000, 1);
+//                            goStraightPID(50, 0.01, 0.000138138, 0.005, 2000, 1);
+//                            sleep(30000);}goNext = true;
+//                        telemetry.addData("heading: ", heading);
+//                        telemetry.update();
+//
+//                        if(goNext)
+//                        {
+//                            if(counter == 0){
+//                                goStraightPID(480, 0.01, 0.000138138, 0.005, 2000, 1);//hi
+//                            }
+//                            splineMovement(0, -0.0621, 0.25, -83, 7);
+//                            counter++;
+//                            if(counter == 1 ){
+//                                hw.intake.setPower(-1);
+//                                sleep(1000);
+//                                hw.intake.setPower(0);}
+//                            if(counter > 1 ){
+//                                goStraightPID(-50, 0.01, 0.000138138, 0.005, 2000, 1);
+//                                sleep(30000);}}
                    /* case backup:
                         goNext = false;
                         goStraightPID(-200, 0.01, 0.000138138, 0.005, 2000, -0.4);
@@ -264,6 +295,11 @@ public class BlueLeftAuto extends LinearOpMode {
                         break;*/
 
                     case spike:
+                        //splineMovement(-0.81, -0.061, -0.2562, 88, 7);
+                        //setLift(-1275, -0.4);
+                        //outtakeExtend();
+
+                        //slidePos = 500;
                         goNext = true;
                         telemetry.addData("heading: ", heading);
                         telemetry.update();
@@ -271,7 +307,32 @@ public class BlueLeftAuto extends LinearOpMode {
                         if(goNext)
                         {
                             if(counter == 0){
-                                goStraightPID(650, 0.01, 0.000138138, 0.005, 2000, 1);//hi
+                                goStraightPID(480, 0.01, 0.000138138, 0.005, 2000, 1);//hi
+                            }
+                            splineMovement(0, -0.0621, -0.252, -83, 7);
+
+                            counter++;
+
+                            if(counter == 1 ){
+                                //goStraightPID(-20, 0.01, 0.000138138, 0.005, 2000, 1);
+                                hw.intake.setPower(-1);
+                                sleep(1000);
+                                hw.intake.setPower(0);}
+                            counter++;
+                            if(counter > 1 ){
+                                hw.intake.setPower(-1);
+                                sleep(1000);
+                                hw.intake.setPower(0);}
+                            goStraightPID(-50, 0.01, 0.000138138, 0.005, 2000, 1);
+                            goStraightPID(50, 0.01, 0.000138138, 0.005, 2000, 1);
+                            sleep(30000);}goNext = true;
+                        telemetry.addData("heading: ", heading);
+                        telemetry.update();
+
+                        if(goNext)
+                        {
+                            if(counter == 0){
+                                goStraightPID(340, 0.01, 0.000138138, 0.005, 2000, 1);//hi
                             }
                             splineMovement(0, -0.0621, 0.25, -83, 7);
                             counter++;
@@ -363,7 +424,7 @@ public class BlueLeftAuto extends LinearOpMode {
                         if(goNext)
                         {
                             if(counter == 0){
-                                goStraightPID(340, 0.01, 0.000138138, 0.005, 2000, 1);//hi
+                                goStraightPID(480, 0.01, 0.000138138, 0.005, 2000, 1);//hi
                             }
                             splineMovement(0, -0.0621, -0.252, 83, 7);
 
@@ -376,8 +437,13 @@ public class BlueLeftAuto extends LinearOpMode {
                                 hw.intake.setPower(0);}
                             counter++;
                             if(counter > 1 ){
+                                hw.intake.setPower(-1);
+                                sleep(1000);
+                                hw.intake.setPower(0);}
                                 goStraightPID(-50, 0.01, 0.000138138, 0.005, 2000, 1);
+                                goStraightPID(50, 0.01, 0.000138138, 0.005, 2000, 1);
                                 sleep(30000);}
+
                             //hw.intakeServo1.setPosition(0.325);
                             //hw.intakeServo2.setPosition(.675);m
 
@@ -394,25 +460,7 @@ public class BlueLeftAuto extends LinearOpMode {
                         }
                         break;
 
-                    case backboard:
-                        goNext = false;
-
-                        splineMovement(0, -0.012, -0.3565, 92, 16);
-                        if(goNext)
-                        {
-                            hw.intake.setPower(-1);
-                            sleep(300);
-                            hw.intake.setPower(0);
-                            sleep(30000);
-                            /*goStraightPID(-1320, 0.01, 0.00138138, 0.05, 4000, -0.7);
-                            sleep(1000);
-                            strafe(0.4, 300);
-                            hw.dropper.setPower(0.3);
-                            sleep(1000);
-                            hw.dropper.setPower(0);
-                            currState = State.park;*/
-                        }
-                        break;
+//
 /*
                     case park:
                         goNext = false;
@@ -450,7 +498,7 @@ public class BlueLeftAuto extends LinearOpMode {
 
             //sleep(30000);
         }
-    }
+
 
     //methods
 

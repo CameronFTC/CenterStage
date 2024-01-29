@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -30,7 +31,9 @@ public class RedRightReal extends LinearOpMode {
 
     hwMap hw;
     double angle;
+    int counter = 0;
     double startAngle;
+    private RevBlinkinLedDriver lights;
     double heading;
     double liftStart;
     double liftPos = 0;
@@ -102,23 +105,25 @@ public class RedRightReal extends LinearOpMode {
             telemetry.addData("Area: ", StickObserverPipeline.maxContour);
             telemetry.addData("Pos: ", pos);
             telemetry.update();
+            lights = hardwareMap.get(RevBlinkinLedDriver.class,"Lights");
+            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
 
             double TSE = StickObserverPipeline.xCoord;
 
-            if(StickObserverPipeline.maxContour < 7000)
+            if(StickObserverPipeline.maxContour < 500)
             {
                 pos = "Left";
                 currState = State.spike;
             }
-            else if(TSE >= 0 && TSE < 150)
+            else if(TSE >310)
             {
                 pos = "Right";
-                currState = State.backboard;
+                currState = State.spike;
             }
-            else if(TSE >= 150)
+            else if(TSE < 310)
             {
                 pos = "Middle";
-                currState = State.backboard;
+                currState = State.spike;
             }
         }
 
@@ -163,14 +168,14 @@ public class RedRightReal extends LinearOpMode {
             //telemetry.addData("heading: ", heading);
             //telemetry.update();
 
-            if(pos.equals("Right"))
+            if(pos.equals("Middle"))
             {
                 switch(currState)
                 {
-                    case backboard:
-                        splineMovement(0.8, -0.34, 0.6, -92, 3);
+                    /*case backboard:
+                        splineMovement(-0.525, 0.32, -0.3, 91, 4);
                         outtakeExtend();
-                        setLift(-1375, -0.7);
+                        setLift(-1325, -0.7);
 
                         slidePos = 500;
 
@@ -178,29 +183,60 @@ public class RedRightReal extends LinearOpMode {
                         {
                             currState = State.april;
                         }
-                        break;
+                        break;*/
 
                     case spike:
-                        goNext = false;
-                        hw.dropper.setPower(0);
-                        outtakeRetract();
-                        splineMovement(-0.05, 0.78, 0.2, 180, 3);//angle was 180
-                        setLift(0, 0.2);
+                        goNext = true;
 
-                        slidePos = 0;
+
+
+
+                        goNext = true;
+                        telemetry.addData("heading: ", heading);
+                        telemetry.update();
 
                         if(goNext)
                         {
-                            hw.intake.setPower(-1);
-                            sleep(1000);
-                            hw.intake.setPower(0);
-                            currState = State.backup;
-                        }
-                        break;
+                            if(counter == 0){
+                                goStraightPID(600, 0.01, 0.000138138, 0.005, 2000, 1);//hi
+                            }
+                            //splineMovement(0, -0.0621, -0.252, -83, 7);
 
-                    case backup:
+                            counter++;
+
+                            if(counter == 1 ){
+                                //goStraightPID(-20, 0.01, 0.000138138, 0.005, 2000, 1);
+                                hw.intake.setPower(-1);
+                                sleep(1000);
+                                hw.intake.setPower(0);}
+                            counter++;
+                            if(counter > 1 ){
+                                hw.intake.setPower(-1);
+                                sleep(1000);
+                                hw.intake.setPower(0);}
+                            //goStraightPID(-50, 0.01, 0.000138138, 0.005, 2000, 1);
+                            goStraightPID(50, 0.01, 0.000138138, 0.005, 2000, 1);
+                            sleep(30000);}goNext = true;
+                        telemetry.addData("heading: ", heading);
+                        telemetry.update();
+
+                        if(goNext)
+                        {
+                            if(counter == 0){
+                                goStraightPID(480, 0.01, 0.000138138, 0.005, 2000, 1);//hi
+                            }
+                            splineMovement(0, -0.0621, 0.25, -83, 7);
+                            counter++;
+                            if(counter == 1 ){
+                                hw.intake.setPower(-1);
+                                sleep(1000);
+                                hw.intake.setPower(0);}
+                            if(counter > 1 ){
+                                goStraightPID(-50, 0.01, 0.000138138, 0.005, 2000, 1);
+                                sleep(30000);}}
+                   /* case backup:
                         goNext = false;
-                        goStraightPID(-260, 0.01, 0.000138138, 0.005, 2000, -0.4);
+                        goStraightPID(-200, 0.01, 0.000138138, 0.005, 2000, -0.4);
 
                         goNext = true;
 
@@ -212,7 +248,7 @@ public class RedRightReal extends LinearOpMode {
 
                     case park:
                         goNext = false;
-                        splineMovement(-0.19, -0.68, 0.6, -90, 5);
+                        splineMovement(-0.3, 0.8, -0.6, 91, 5);
 
                         if(goNext)
                         {
@@ -229,25 +265,23 @@ public class RedRightReal extends LinearOpMode {
 
                         if(goNext)
                         {
-                            hw.lift.setPower(-0.1);
-                            hw.lift2.setPower(-0.1);
-                            goStraightPID(-520, 0.01, 0.000138138, 0.005, 2000, -0.3);
+                            goStraightPID(-450, 0.01, 0.000138138, 0.005, 2000, -0.3);
                             hw.dropper.setPower(0.3);
                             sleep(1000);
                             currState = State.spike;
                         }
 
-                        break;
+                        break;*/
                 }
             }
-            else if(pos.equals("Middle"))
+            else if(pos.equals("Left"))
             {
                 switch(currState)
                 {
-                    case backboard:
-                        splineMovement(1, -0.36, 0.6, -91, 4);
+                   /* case backboard:
+                        splineMovement(-0.54, 0.38, -0.4, 91, 3);
                         outtakeExtend();
-                        setLift(-1375, -0.7);
+                        setLift(-1275, -0.7);
 
                         slidePos = 500;
 
@@ -255,29 +289,83 @@ public class RedRightReal extends LinearOpMode {
                         {
                             currState = State.april;
                         }
-                        break;
+                        break;*/
 
                     case spike:
-                        goNext = false;
-                        hw.dropper.setPower(0);
-                        outtakeRetract();
-                        splineMovement(-0.01, 0.92, 0.2, 180, 3);//angle was 180
-                        setLift(0, 0.1);
+                        //splineMovement(-0.81, -0.061, -0.2562, 88, 7);
+                        //setLift(-1275, -0.4);
+                        //outtakeExtend();
 
-                        slidePos = 0;
+                        //slidePos = 500;
+                        goNext = true;
+                        telemetry.addData("heading: ", heading);
+                        telemetry.update();
 
                         if(goNext)
                         {
+                            if(counter == 0){
+                                goStraightPID(480, 0.01, 0.000138138, 0.005, 2000, 1);//hi
+                            }
+                            splineMovement(0, -0.0621, -0.252, -83, 7);
+
+                            counter++;
+
+                            if(counter == 1 ){
+                                //goStraightPID(-20, 0.01, 0.000138138, 0.005, 2000, 1);
+                                hw.intake.setPower(-1);
+                                sleep(1000);
+                                hw.intake.setPower(0);}
+                            counter++;
+                            if(counter > 1 ){
+                                hw.intake.setPower(-1);
+                                sleep(1000);
+                                hw.intake.setPower(0);}
+                            goStraightPID(-50, 0.01, 0.000138138, 0.005, 2000, 1);
+                            goStraightPID(50, 0.01, 0.000138138, 0.005, 2000, 1);
+                            sleep(30000);}goNext = true;
+                        telemetry.addData("heading: ", heading);
+                        telemetry.update();
+
+                        if(goNext)
+                        {
+                            if(counter == 0){
+                                goStraightPID(340, 0.01, 0.000138138, 0.005, 2000, 1);//hi
+                            }
+                            splineMovement(0, -0.0621, 0.25, -83, 7);
+                            counter++;
+                            if(counter == 1 ){
+                                hw.intake.setPower(-1);
+                                sleep(1000);
+                                hw.intake.setPower(0);}
+                            if(counter > 1 ){
+                                goStraightPID(-50, 0.01, 0.000138138, 0.005, 2000, 1);
+                                sleep(30000);}}
+                        /*goNext = true;
+                        /*hw.dropper.setPower(0);
+                        outtakeRetract();
+                        splineMovement(-0.1, -0.37, -0.5, 180, 3);//angle was 180*/
+
+
+                        /*slidePos = 0;
+
+                        if(goNext)
+                        {
+                            goStraightPID(500, 0.01, 0.000138138, 0.005, 2000, 1);
+                            splineMovement(0, -0.061, -0.562, -88, 7);//change it to make it turn left
+                            //hw.intakeServo1.setPosition(0.325);
+                            //hw.intakeServo2.setPosition(.675);
                             hw.intake.setPower(-1);
-                            sleep(1000);
+                            sleep(300);
                             hw.intake.setPower(0);
-                            currState = State.backup;
-                        }
+                            stopAll();
+                            sleep(30000);
+                        }*/
                         break;
 
-                    case park:
+                   /* case park:
                         goNext = false;
-                        splineMovement(-0.36, -0.86, 0.6, -90, 5);
+                        setLift(0, 0.5);
+                        splineMovement(0.24, .5, -0.4, 90, 5);
 
                         if(goNext)
                         {
@@ -294,9 +382,7 @@ public class RedRightReal extends LinearOpMode {
 
                         if(goNext)
                         {
-                            hw.lift.setPower(-0.1);
-                            hw.lift2.setPower(-0.1);
-                            goStraightPID(-480, 0.01, 0.000138138, 0.005, 2000, -0.3);
+                            goStraightPID(-380, 0.01, 0.000138138, 0.005, 2000, -0.3);
                             hw.dropper.setPower(0.2);
                             sleep(1000);
                             currState = State.spike;
@@ -306,7 +392,7 @@ public class RedRightReal extends LinearOpMode {
 
                     case backup:
                         goNext = false;
-                        goStraightPID(-70, 0.01, 0.000138138, 0.005, 2000, -0.4);
+                        goStraightPID(-200, 0.01, 0.000138138, 0.005, 2000, -0.4);
 
                         goNext = true;
 
@@ -314,52 +400,65 @@ public class RedRightReal extends LinearOpMode {
                         {
                             currState = State.park;
                         }
-                        break;
+                        break;*/
                 }
             }
-            else if(pos.equals("Left"))
+
+            else if(pos.equals("Right"))
             {
                 switch(currState)
                 {
                     case spike:
-                        splineMovement(0.93, 0, 0.5, -95, 5);
-                        setLift(-1225, -1);
-                        outtakeExtend();
+                        //splineMovement(-0.81, -0.061, -0.2562, 88, 7);
+                        //setLift(-1275, -0.4);
+                        //outtakeExtend();
 
-                        slidePos = 500;
-
+                        //slidePos = 500;
+                        goNext = true;
                         telemetry.addData("heading: ", heading);
                         telemetry.update();
 
                         if(goNext)
                         {
-                            goStraightPID(440, 0.01, 0.000138138, 0.005, 3000, 0.6);
-                            sleep(500);
-                            hw.intake.setPower(-1);
-                            sleep(1000);
-                            hw.intake.setPower(0);
-                            hw.lift.setPower(-0.1);
-                            hw.lift2.setPower(-0.1);
-                            currState = State.backboard;
-                        }
-                        break;
+                            if(counter == 0){
+                                goStraightPID(480, 0.01, 0.000138138, 0.005, 2000, 1);//hi
+                            }
+                            splineMovement(0, -0.0621, -0.252, 83, 7);
 
-                    case backboard:
-                        goNext = false;
-                        splineMovement(0.39, -0.5, 0.6, -91, 1);
-                        goNext = true;
+                            counter++;
 
-                        if(goNext)
-                        {
-                            goStraightPID(-1370, 0.01, 0.00138138, 0.05, 4000, -0.7);
-                            //strafe(-0.4, -300);
-                            hw.dropper.setPower(0.3);
-                            sleep(1000);
-                            hw.dropper.setPower(0);
-                            currState = State.park;
-                        }
-                        break;
+                            if(counter == 1 ){
+                                //goStraightPID(-20, 0.01, 0.000138138, 0.005, 2000, 1);
+                                hw.intake.setPower(-1);
+                                sleep(1000);
+                                hw.intake.setPower(0);}
+                            counter++;
+                            if(counter > 1 ){
+                                hw.intake.setPower(-1);
+                                sleep(1000);
+                                hw.intake.setPower(0);}
+                            goStraightPID(-50, 0.01, 0.000138138, 0.005, 2000, 1);
+                            goStraightPID(50, 0.01, 0.000138138, 0.005, 2000, 1);
+                            sleep(30000);}
 
+                        //hw.intakeServo1.setPosition(0.325);
+                        //hw.intakeServo2.setPosition(.675);m
+
+                        //goStraightPID(500, 0.01, 0.000138138, 0.005, 2000, 1);
+                        //splineMovement(0, -0.062, -0.2565, 88, 7);//rotation-.565
+                        //hw.intakeServo1.setPosition(0.325);
+                        //hw.intakeServo2.setPosition(.675);
+                        //hw.intake.setPower(-1);
+                        //sleep(300);
+                        //hw.intake.setPower(0);
+                        //stopAll();
+                        //sleep(30000);
+                        //currState = State.backboard;
+                }
+                break;
+
+//
+/*
                     case park:
                         goNext = false;
                         outtakeRetract();
@@ -376,25 +475,25 @@ public class RedRightReal extends LinearOpMode {
 
                     case stop:
                         goNext = false;
-                        setLift(0, 0.7);
-                        splineMovement(0.1, 0, -0.7, 180, 5);
+                        setLift(0, 0.4);
+                        splineMovement(0.5, 0, -0.6, 90, 3);
 
                         if(goNext)
                         {
+                            strafe(0.4, 500);
                             sleep(30000);
-                        }
-                        break;
-                }
+                        }*/
+                //break;
             }
-
-            //adjust based on april tag
-
-            //goStraightPID(-110, 1 / 110, 0.000138138, 0.0005, 2000, -0.6);
-
-            //deposit
-
-            //sleep(30000);
         }
+
+        //adjust based on april tag
+
+        //goStraightPID(-110, 1 / 110, 0.000138138, 0.0005, 2000, -0.6);
+
+        //deposit
+
+        //sleep(30000);
     }
 
     //methods
