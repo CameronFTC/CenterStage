@@ -79,18 +79,21 @@ public class Bluefar extends LinearOpMode {
         mecanumDrive.setPoseEstimate(startPose);
 
 
-        TrajectorySequence traj1 = mecanumDrive.trajectorySequenceBuilder(startPose)
+        TrajectorySequence trajl1 = mecanumDrive.trajectorySequenceBuilder(startPose)
 //<<<<<<< HEAD
-                .back(30)
+                .forward(30)
+                .turn(Math.toRadians(-90))
+                //.back(4)
                 .build();
-                //.lineToLinearHeading(new Pose2d(0, 0, Math.toRadians(90)))
-                //.turn(Math.toRadians(30))
+        TrajectorySequence trajl2 = mecanumDrive.trajectorySequenceBuilder(trajl1.end())
+                //.back(10)
+                .build();
 //=======
 //                .splineTo(new Vector2d(-15, 5), Math.toRadians(0))
 //                //.turn(Math.toRadians(-90))
 //>>>>>>> 1e53bf7b1dc6074257ebf4c4debc58b442740c6e
                 //.forward(5)
-                
+
 //ifright
 //            TrajectorySequence trajright = mecanumDrive.trajectorySequenceBuilder(traj1.end())
 //                    .turn(Math.toRadians(90))
@@ -141,16 +144,16 @@ public class Bluefar extends LinearOpMode {
             double TSE = StickObserverPipeline.xCoord;
             //pos = "Right";
             if (StickObserverPipeline.maxContour < 500) {
-                pos = "Right";
-
-            } else if (TSE >= 0 && TSE < 300) {
                 pos = "Left";
 
-            } else if (TSE >= 150) {
+            } else if (TSE >= 0 && TSE < 300) {
                 pos = "Middle";
 
+            } else if (TSE >= 150) {
+                pos = "Right" ;
+
             }
-            pos = "Left";
+
         }
 
 
@@ -199,17 +202,9 @@ public class Bluefar extends LinearOpMode {
 
             if (pos.equals("Left")) {
 
-                mecanumDrive.followTrajectorySequence(traj1);
-//<<<<<<< HEAD
-                //hw.lift2.setPower(.2);
-
-//
-                //slidePos = 100;
-                //sleep(1000);
-//=======
-
-//
-                hw.autoIntake(-1, 5);
+                mecanumDrive.followTrajectorySequence(trajl1);
+                hw.autoIntake(-1, 1);
+                mecanumDrive.followTrajectorySequence(trajl2);
 //                sleep(1000);
 //>>>>>>> 1e53bf7b1dc6074257ebf4c4debc58b442740c6e
 //                hw.intake.setPower(0);

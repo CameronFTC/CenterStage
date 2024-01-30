@@ -225,8 +225,8 @@ public class CenterStageTeleOp extends LinearOpMode {
         double frPwr = (rotY - rotX - rx) / denominator;
         double brPwr = (rotY + rotX - rx) / denominator;
 
-        hw.fL.setPower(-flPwr);
-        hw.bL.setPower(-blPwr);
+        hw.fL.setPower(flPwr);
+        hw.bL.setPower(blPwr);
         hw.fR.setPower(-frPwr);
         hw.bR.setPower(-brPwr);
     }
@@ -262,8 +262,8 @@ public class CenterStageTeleOp extends LinearOpMode {
             hw.lift.setPower(-gamepad2.left_stick_y);
             hw.lift2.setPower(gamepad2.left_stick_y);
         } else {
-            hw.lift.setPower(-0.03);
-            hw.lift2.setPower(0.03);
+            hw.lift.setPower(0);
+            hw.lift2.setPower(0);
         }
 
     }

@@ -84,8 +84,8 @@ public class hwMap {
         fR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        fR.setDirection(DcMotorSimple.Direction.REVERSE);
-        bR.setDirection(DcMotorSimple.Direction.REVERSE);
+        //fR.setDirection(DcMotorSimple.Direction.REVERSE);
+        //bR.setDirection(DcMotorSimple.Direction.REVERSE);
         //fL.setDirection(DcMotorSimple.Direction.REVERSE);
         //bL.setDirection(DcMotorSimple.Direction.REVERSE);
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
