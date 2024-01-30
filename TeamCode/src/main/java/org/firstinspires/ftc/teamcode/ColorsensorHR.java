@@ -41,7 +41,6 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
             }
             else if(RtoG < .6 ) {
                 col = "green";
-                //ham
                 lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
             }
             else if(GtoB < .9){

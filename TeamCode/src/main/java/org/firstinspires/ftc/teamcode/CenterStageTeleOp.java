@@ -66,8 +66,8 @@ public class CenterStageTeleOp extends LinearOpMode {
             //telemetry.update();
 
             //drive();
-            robotCentric();
-            //fieldCentric();
+            //robotCentric();
+            fieldCentric();
             liftMove();
             intakeMove();
             intakeServos();
@@ -76,11 +76,11 @@ public class CenterStageTeleOp extends LinearOpMode {
             droneLaunch();
             colors();
 
-            telemetry.addData("Red", color.red());
-            telemetry.addData("Green", color.green());
-            telemetry.addData("Blue", color.blue());
+            //telemetry.addData("Red", color.red());
+            //telemetry.addData("Green", color.green());
+            //telemetry.addData("Blue", color.blue());
 
-            telemetry.update();
+            //telemetry.update();
 
             if (gamepad1.a) {
                 currLift = liftHeight.retract;
@@ -184,12 +184,12 @@ public class CenterStageTeleOp extends LinearOpMode {
         telemetry.addData("GtoB", GtoB);
         telemetry.addData("BtoR", BtoR);
         telemetry.addData(":", lights.getConnectionInfo());*/
-        telemetry.addData("Color", col);
+        //telemetry.addData("Color", col);
 
         // lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
 
 
-        telemetry.update();
+        //telemetry.update();
     }
     private void drive() {
         //normal
@@ -202,11 +202,11 @@ public class CenterStageTeleOp extends LinearOpMode {
 
     private void fieldCentric() {
         double y = -gamepad1.left_stick_y;
-        double x = gamepad1.left_stick_x;
+        double x = -gamepad1.left_stick_x;
         double rx = gamepad1.right_stick_x;
 
         //double heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-        double heading = getAngle();
+        double heading = -getAngle();
 
         telemetry.addData("heading: ", heading);
         telemetry.addData("bruh: ", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
@@ -217,7 +217,7 @@ public class CenterStageTeleOp extends LinearOpMode {
         double rotX = x * Math.cos(Math.toRadians(-heading)) - y * Math.sin(Math.toRadians(-heading));
         double rotY = x * Math.sin(Math.toRadians(-heading)) + y * Math.cos(Math.toRadians(-heading));
 
-        //rotX = rotX * 1.1;
+        rotX = rotX * 1.1;
 
         double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
         double flPwr = (rotY + rotX + rx) / denominator;
@@ -283,9 +283,9 @@ public class CenterStageTeleOp extends LinearOpMode {
     }
 
     private void dropper() {
-        telemetry.addData("lt: ", gamepad2.left_trigger);
-        telemetry.addData("rt: ", gamepad2.right_trigger);
-        telemetry.update();
+       // telemetry.addData("lt: ", gamepad2.left_trigger);
+        //telemetry.addData("rt: ", gamepad2.right_trigger);
+        //telemetry.update();
 
         if(Math.abs(gamepad2.left_trigger - gamepad2.right_trigger) > .1){
             hw.dropper.setPower(gamepad2.left_trigger - gamepad2.right_trigger);
@@ -296,12 +296,12 @@ public class CenterStageTeleOp extends LinearOpMode {
     }
 
     public void intakeServos() {
-        telemetry.addData("servo1: ", hw.intakeServo1.getPosition());
-        telemetry.addData("servo2: ", hw.intakeServo2.getPosition());
+        //telemetry.addData("servo1: ", hw.intakeServo1.getPosition());
+        //telemetry.addData("servo2: ", hw.intakeServo2.getPosition());
         if(!hw.intakeServo1.equals(0.00)){
-            telemetry.addData("not at 0", hw.intakeServo1.getPosition());
+            //telemetry.addData("not at 0", hw.intakeServo1.getPosition());
         }
-        telemetry.update();
+        //telemetry.update();
 
 
 
