@@ -82,7 +82,7 @@ public class Bluefar extends LinearOpMode {
 
 
         TrajectorySequence traj1 = mecanumDrive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(startPose.getX(), startPose.getY()-40))
+                .back(30)
                 .build();
                 //.lineToLinearHeading(new Pose2d(0, 0, Math.toRadians(90)))
                 //.turn(Math.toRadians(30))
@@ -197,10 +197,10 @@ public class Bluefar extends LinearOpMode {
             if (pos.equals("Left")) {
 
                 mecanumDrive.followTrajectorySequence(traj1);
-                hw.lift2.setPower(.2);
+                //hw.lift2.setPower(.2);
 
 //
-                slidePos = 100;
+                //slidePos = 100;
                 //sleep(1000);
 //                hw.intake.setPower(0);
                 //hi

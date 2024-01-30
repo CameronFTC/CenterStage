@@ -110,21 +110,22 @@ public class RedRightReal extends LinearOpMode {
 
             double TSE = StickObserverPipeline.xCoord;
 
-            if(StickObserverPipeline.maxContour < 500)
+            if(TSE< 50)
             {
                 pos = "Left";
                 currState = State.spike;
             }
-            else if(TSE >310)
+            else if(StickObserverPipeline.maxContour>1900 && StickObserverPipeline.maxContour<2500)
             {
                 pos = "Right";
                 currState = State.spike;
             }
-            else if(TSE < 310)
+            else if(TSE > 310)
             {
                 pos = "Middle";
                 currState = State.spike;
             }
+
         }
 
 
@@ -211,9 +212,10 @@ public class RedRightReal extends LinearOpMode {
                                 hw.intake.setPower(0);}
                             counter++;
                             if(counter > 1 ){
-                                hw.intake.setPower(-1);
-                                sleep(1000);
-                                hw.intake.setPower(0);}
+//                                hw.intake.setPower(-1);
+//                                sleep(1000);
+//                                hw.intake.setPower(0);
+                                }
                             //goStraightPID(-50, 0.01, 0.000138138, 0.005, 2000, 1);
                             goStraightPID(50, 0.01, 0.000138138, 0.005, 2000, 1);
                             sleep(30000);}goNext = true;
@@ -312,9 +314,10 @@ public class RedRightReal extends LinearOpMode {
 
                             if(counter == 1 ){
                                 //goStraightPID(-20, 0.01, 0.000138138, 0.005, 2000, 1);
-                                hw.intake.setPower(-1);
-                                sleep(1000);
-                                hw.intake.setPower(0);}
+//                                hw.intake.setPower(-1);
+//                                sleep(1000);
+//                                hw.intake.setPower(0);
+                            }
                             counter++;
                             if(counter > 1 ){
                                 hw.intake.setPower(-1);
@@ -429,9 +432,10 @@ public class RedRightReal extends LinearOpMode {
 
                             if(counter == 1 ){
                                 //goStraightPID(-20, 0.01, 0.000138138, 0.005, 2000, 1);
-                                hw.intake.setPower(-1);
-                                sleep(1000);
-                                hw.intake.setPower(0);}
+                                //hw.intake.setPower(-1);
+//                                sleep(1000);
+//                                hw.intake.setPower(0);
+                            }
                             counter++;
                             if(counter > 1 ){
                                 hw.intake.setPower(-1);

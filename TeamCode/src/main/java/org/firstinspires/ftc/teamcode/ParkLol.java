@@ -15,7 +15,7 @@ public class ParkLol extends LinearOpMode {
 
         while(opModeIsActive() && !isStopRequested())
         {
-            hw.goStraightPID(-900,0.01, 0.00138138, 0.05, 4000, -0.7);
+            hw.goStraightPID(-950,0.01, 0.00138138, 0.05, 4000, -0.7);
 
             sleep(30000);
         }

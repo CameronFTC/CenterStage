@@ -315,13 +315,14 @@ public class BlueLeftAuto extends LinearOpMode {
 
                             if(counter == 1 ){
                                 //goStraightPID(-20, 0.01, 0.000138138, 0.005, 2000, 1);
-                                hw.intake.setPower(-1);
-                                sleep(1000);
-                                hw.intake.setPower(0);}
+//                                hw.intake.setPower(-1);
+//                                sleep(1000);
+                              //hw.intake.setPower(0);
+                            }
                             counter++;
                             if(counter > 1 ){
-                                hw.intake.setPower(-1);
-                                sleep(1000);
+//                                hw.intake.setPower(-1);
+//                                sleep(1000);
                                 hw.intake.setPower(0);}
                             goStraightPID(-50, 0.01, 0.000138138, 0.005, 2000, 1);
                             goStraightPID(50, 0.01, 0.000138138, 0.005, 2000, 1);
@@ -337,10 +338,14 @@ public class BlueLeftAuto extends LinearOpMode {
                             splineMovement(0, -0.0621, 0.25, -83, 7);
                             counter++;
                             if(counter == 1 ){
-                                hw.intake.setPower(-1);
-                                sleep(1000);
-                                hw.intake.setPower(0);}
+//                                hw.intake.setPower(-1);
+//                                sleep(1000);
+//                                hw.intake.setPower(0);
+                            }
                             if(counter > 1 ){
+                                sleep(100);                                hw.intake.setPower(-1);
+                                sleep(1000);
+                                hw.intake.setPower(0);
                                 goStraightPID(-50, 0.01, 0.000138138, 0.005, 2000, 1);
                                 sleep(30000);}}
                         /*goNext = true;
@@ -432,11 +437,13 @@ public class BlueLeftAuto extends LinearOpMode {
 
                             if(counter == 1 ){
                                 //goStraightPID(-20, 0.01, 0.000138138, 0.005, 2000, 1);
-                                hw.intake.setPower(-1);
-                                sleep(1000);
-                                hw.intake.setPower(0);}
+                                //hw.intake.setPower(-1);
+                                //sleep(1000);
+                                //hw.intake.setPower(0);
+                                }
                             counter++;
                             if(counter > 1 ){
+                                sleep(100);
                                 hw.intake.setPower(-1);
                                 sleep(1000);
                                 hw.intake.setPower(0);}
