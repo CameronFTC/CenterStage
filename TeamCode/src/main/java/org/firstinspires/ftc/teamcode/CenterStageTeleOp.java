@@ -203,7 +203,7 @@ public class CenterStageTeleOp extends LinearOpMode {
     private void fieldCentric() {
         double y = -gamepad1.left_stick_y;
         double x = -gamepad1.left_stick_x;
-        double rx = gamepad1.right_stick_x;
+        double rx = -gamepad1.right_stick_x;
 
         //double heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
         double heading = -getAngle();
