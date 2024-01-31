@@ -269,7 +269,9 @@ public class CenterStageTeleOp extends LinearOpMode {
     }
 
     private void intakeMove() {
-        hw.intake.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
+        if(Math.abs(gamepad2.left_stick_y) > .1){
+            hw.intake.setPower(gamepad2.left_stick_y);//gamepad1.right_trigger - gamepad1.left_trigger);
+        }
     }
 
     private void outakeMove() {
