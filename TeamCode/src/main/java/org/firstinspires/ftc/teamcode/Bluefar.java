@@ -71,9 +71,9 @@ public class Bluefar extends LinearOpMode {
         SampleMecanumDrive mecanumDrive = new SampleMecanumDrive(hardwareMap);
 
 
-        Pose2d startPose = (new Pose2d(-38, 62, Math.toRadians(90)));
+        Pose2d startPose = (new Pose2d(-35, 62, Math.toRadians(270)));
         ElapsedTime timer = new ElapsedTime();
-        Vector2d myVector = new Vector2d(10, -5);
+        Vector2d myVector = new Vector2d(-35, 62);
 
 
         mecanumDrive.setPoseEstimate(startPose);
@@ -81,13 +81,16 @@ public class Bluefar extends LinearOpMode {
 
         TrajectorySequence trajl1 = mecanumDrive.trajectorySequenceBuilder(startPose)
 //<<<<<<< HEAD
-                .forward(30)
+                .lineTo(new Vector2d(-35,32))
                 .turn(Math.toRadians(-90))
-                //.back(4)
                 .build();
         TrajectorySequence trajl2 = mecanumDrive.trajectorySequenceBuilder(trajl1.end())
-                //.back(10)
+                .lineTo(new Vector2d(-40,32))
+
+
+//                .strafeLeft(1)
                 .build();
+
 //=======
 //                .splineTo(new Vector2d(-15, 5), Math.toRadians(0))
 //                //.turn(Math.toRadians(-90))
@@ -204,14 +207,18 @@ public class Bluefar extends LinearOpMode {
 
                 mecanumDrive.followTrajectorySequence(trajl1);
                 hw.autoIntake(-1, 1);
-                mecanumDrive.followTrajectorySequence(trajl2);
+               mecanumDrive.followTrajectorySequence(trajl2);
+
+
 //                sleep(1000);
 //>>>>>>> 1e53bf7b1dc6074257ebf4c4debc58b442740c6e
 //                hw.intake.setPower(0);
                 //hi
             }
 
+
         }
+
 
     }
     //methods

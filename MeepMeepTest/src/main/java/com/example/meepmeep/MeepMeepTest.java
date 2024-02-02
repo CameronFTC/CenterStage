@@ -14,29 +14,21 @@ public class MeepMeepTest{
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(-38, 62, Math.toRadians(270)))
-                                .splineTo(new Vector2d(-15
-                                        , 5), Math.toRadians(0))
-                                //intake
-//                                .strafeLeft(25)
-//                                .back(30)
-//                                .lineToLinearHeading(new Pose2d(47, 38, Math.toRadians(-90)))
-//                                .turn(Math.toRadians(90))
-//                                .strafeLeft(5)
-                                //outtake
-                                //.strafeLeft(10)
+                                drive.trajectorySequenceBuilder(new Pose2d(-35, 62, Math.toRadians(90)))
+                                        .back(32)
+                                        .turn(Math.toRadians(-90))
+                                        .back(2)
 
 
-
-
-//                                .turn(Math.toRadians(90))
-//                                .forward(30)
-//                                .turn(Math.toRadians(90))
-//                                .forward(30)
-//                                .turn(Math.toRadians(90))
-//                                .forward(30)
-//                                .turn(Math.toRadians(90))
-                                .build()
+                                        //intake
+        //                                .strafeLeft(25)
+        //                                .back(30)
+        //                                .lineToLinearHeading(new Pose2d(47, 38, Math.toRadians(-90)))
+        //                                .turn(Math.toRadians(90))
+        //                                .strafeLeft(5)
+                                        //outtake
+                                        //.strafeLeft(10)
+                                        .build()
                 );
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
