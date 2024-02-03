@@ -73,7 +73,7 @@ public class Bluefar extends LinearOpMode {
 
         Pose2d startPose = (new Pose2d(-35, 62, Math.toRadians(270)));
         ElapsedTime timer = new ElapsedTime();
-        Vector2d myVector = new Vector2d(-35, 62);
+        Vector2d myVector = new Vector2d(0, 0);
 
 
         mecanumDrive.setPoseEstimate(startPose);
@@ -83,12 +83,14 @@ public class Bluefar extends LinearOpMode {
 //<<<<<<< HEAD
                 .lineTo(new Vector2d(-35,32))
                 .turn(Math.toRadians(-90))
+                .lineTo(new Vector2d(-32,32))
+                .addTemporalMarker(2, () -> hw.autoIntake(-1, 1))
+
                 .build();
+
         TrajectorySequence trajl2 = mecanumDrive.trajectorySequenceBuilder(trajl1.end())
-                .lineTo(new Vector2d(-40,32))
+                .lineTo(new Vector2d(-45,32))
 
-
-//                .strafeLeft(1)
                 .build();
 
 //=======
@@ -132,7 +134,7 @@ public class Bluefar extends LinearOpMode {
         liftStart = hw.lift2.getCurrentPosition();
 
         //vision
-        String pos = "Middle";
+        String pos = "Left";
 
         CVMaster cv = new CVMaster(this, "Blue");
 //      call the function to startStreaming
@@ -192,8 +194,9 @@ public class Bluefar extends LinearOpMode {
         //pos = "Middle";
         //currState = State.backboard;
         //while (opModeIsActive() && !isStopRequested()) {
-        if (!isStopRequested()) {
-            //imu.resetYaw();
+        if (opModeIsActive() && !isStopRequested()) {
+            imu.resetYaw();
+
 
             slidePos = 0;
             heading = hw.getAngle();
@@ -203,11 +206,14 @@ public class Bluefar extends LinearOpMode {
             //telemetry.addData("heading: ", heading);
             //telemetry.update();
 
+
+
             if (pos.equals("Left")) {
 
                 mecanumDrive.followTrajectorySequence(trajl1);
-                hw.autoIntake(-1, 1);
-               mecanumDrive.followTrajectorySequence(trajl2);
+                //imu.resetYaw();
+                //hw.autoIntake(-1, 1);
+                mecanumDrive.followTrajectorySequence(trajl2);
 
 
 //                sleep(1000);

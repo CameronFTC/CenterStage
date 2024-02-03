@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
+import org.firstinspires.ftc.teamcode.drive.TwoWheelTrackingLocalizer;
 
 @TeleOp(name = "TeleOp", group = "TeleOp")
 public class CenterStageTeleOp extends LinearOpMode {
@@ -212,6 +214,7 @@ public class CenterStageTeleOp extends LinearOpMode {
         telemetry.addData("bruh: ", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
         telemetry.addData("start: ", startAngle);
         telemetry.addData("angle: ", hw.angle());
+        //telemetry.addData("encoder", TwoWheelTrackingLocalizer.getEncoderVals());
         telemetry.update();
 
         double rotX = x * Math.cos(Math.toRadians(-heading)) - y * Math.sin(Math.toRadians(-heading));
@@ -229,7 +232,48 @@ public class CenterStageTeleOp extends LinearOpMode {
         hw.bL.setPower(blPwr);
         hw.fR.setPower(-frPwr);
         hw.bR.setPower(-brPwr);
+//        if (gamepad1.right_bumper) {
+//            fieldCentricSlow();
+//        }
     }
+
+    private void fieldCentricSlow() {
+
+
+            double y = -gamepad1.left_stick_y;
+
+            double x = -gamepad1.left_stick_x;
+
+            double rx = -gamepad1.right_stick_x;
+
+            //double heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+
+            double heading = -getAngle();
+
+            telemetry.addData("heading: ", heading);
+            telemetry.addData("bruh: ", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+            telemetry.addData("start: ", startAngle);
+            telemetry.addData("angle: ", hw.angle());
+            telemetry.update();
+
+            double rotX = x * Math.cos(Math.toRadians(-heading)) - y * Math.sin(Math.toRadians(-heading));
+            double rotY = x * Math.sin(Math.toRadians(-heading)) + y * Math.cos(Math.toRadians(-heading));
+
+            rotX = rotX * 1.1;
+
+            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+            double flPwr = (rotY + rotX + rx) / denominator/2;
+            double blPwr = (rotY - rotX + rx) / denominator/2;
+            double frPwr = (rotY - rotX - rx) / denominator/2;
+            double brPwr = (rotY + rotX - rx) / denominator/2;
+
+            hw.fL.setPower(flPwr);
+            hw.bL.setPower(blPwr );
+            hw.fR.setPower(-frPwr);
+            hw.bR.setPower(-brPwr );
+
+        }
+
 
     private void robotCentric() {
         double y = gamepad1.left_stick_y; // Remember, Y stick value is reversed
