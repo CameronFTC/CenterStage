@@ -232,9 +232,9 @@ public class CenterStageTeleOp extends LinearOpMode {
         hw.bL.setPower(blPwr);
         hw.fR.setPower(-frPwr);
         hw.bR.setPower(-brPwr);
-//        if (gamepad1.right_bumper) {
-//            fieldCentricSlow();
-//        }
+        if (gamepad1.right_bumper) {
+            fieldCentricSlow();
+        }
     }
 
     private void fieldCentricSlow() {

@@ -28,7 +28,6 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@Disabled
 
 @Autonomous(name = "Red Far", group = "Autonomous")
 public class Redfar extends LinearOpMode {
@@ -78,25 +77,61 @@ public class Redfar extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-//        SampleMecanumDrive mecanumDrive = new SampleMecanumDrive(hardwareMap);
-//
-//        Pose2d startPose = (new Pose2d(-38, 62, Math.toRadians(270)));
-//        ElapsedTime timer = new ElapsedTime();
-//
-//        mecanumDrive.setPoseEstimate(startPose);
-//
-//        TrajectorySequence traj1 = mecanumDrive.trajectorySequenceBuilder(startPose)
-//                .forward(30)
-//                .build();
-//
-//        TrajectorySequence trajright = mecanumDrive.trajectorySequenceBuilder(traj1.end())
-//                .turn(Math.toRadians(45))
-//                .build();
-//
-//        TrajectorySequence trajmiddle = mecanumDrive.trajectorySequenceBuilder(traj1.end())
-//                .forward(5)
-//                .turn(10)
-//                .build();
+        SampleMecanumDrive mecanumDrive = new SampleMecanumDrive(hardwareMap);
+
+
+        Pose2d startPose = (new Pose2d(-35, -62, Math.toRadians(90)));
+        ElapsedTime timer = new ElapsedTime();
+        Vector2d myVector = new Vector2d(0, 0);
+
+
+        mecanumDrive.setPoseEstimate(startPose);
+
+//left auto
+        TrajectorySequence trajredl1 = mecanumDrive.trajectorySequenceBuilder(startPose)
+
+                .lineTo(new Vector2d(-35,-32))
+                .turn(Math.toRadians(-90))
+                .lineTo(new Vector2d(-38,-32))
+                .waitSeconds(.5)
+                .addTemporalMarker(2, () -> hw.autoIntake(-1, 1))
+
+                .build();
+
+        TrajectorySequence trajredl2 = mecanumDrive.trajectorySequenceBuilder(trajredl1.end())
+                .lineTo(new Vector2d(-20,-32))
+
+                .build();
+        //right auto
+        TrajectorySequence trajredr1 = mecanumDrive.trajectorySequenceBuilder(startPose)
+
+                .lineTo(new Vector2d(-35,-32))
+                .turn(Math.toRadians(90))
+                .lineTo(new Vector2d(-32,-32))
+                .waitSeconds(.5)
+                .addTemporalMarker(2, () -> hw.autoIntake(-1, 1))
+
+                .build();
+
+        TrajectorySequence trajredr2 = mecanumDrive.trajectorySequenceBuilder(trajredr1.end())
+                .lineTo(new Vector2d(-45,-32))
+
+                .build();
+
+//middle auto
+        TrajectorySequence trajredm1 = mecanumDrive.trajectorySequenceBuilder(startPose)
+
+                .lineTo(new Vector2d(-35,-32))
+                .turn(Math.toRadians(180))
+                .waitSeconds(.5)
+                .addTemporalMarker(2, () -> hw.autoIntake(-1, 1))
+
+                .build();
+
+        TrajectorySequence trajredm2 = mecanumDrive.trajectorySequenceBuilder(trajredm1.end())
+                .lineTo(new Vector2d(-35,-38))
+
+                .build();
 
         hw = new hwMap(this);
 
@@ -131,18 +166,19 @@ public class Redfar extends LinearOpMode {
         while(!isStarted())
         {
             telemetry.addData("Coords: ", StickObserverPipeline.xCoord + " " + StickObserverPipeline.yCoord);
+            telemetry.addData("Area: ", StickObserverPipeline.maxContour);
             telemetry.addData("Pos: ", pos);
             telemetry.update();
 
             double TSE = StickObserverPipeline.xCoord;
 
-            if(TSE > 0 && TSE < 50)
+            if(StickObserverPipeline.maxContour<3000)
             {
                 pos = "Left";
                 currState = State.spike;
                 DESIRED_TAG_ID = 4;
             }
-            else if(TSE >= 50 && TSE < 400)
+            else if(TSE >= 50 && TSE < 300)
             {
                 pos = "Middle";
                 currState = State.spike;
@@ -201,148 +237,19 @@ public class Redfar extends LinearOpMode {
             //telemetry.addData("heading: ", heading);
             //telemetry.update();
 
-            if(pos.equals("Middle"))
-            {
-                switch(currState)
-                {
-                    case backboard:
-                        goNext = false;
-                        //splineMovement(0.48, -0.42, 0.6, -91, 1);
-                        goStraightPID(-200, 0.01, 0.000138138, 0.005, 4000, -0.5);
+            if (pos.equals("Left")) {
 
-                        goNext = true;
+                mecanumDrive.followTrajectorySequence(trajredl1);
+                mecanumDrive.followTrajectorySequence(trajredl2);
 
-                        if(goNext)
-                        {
-                            outtakeExtend();
-                            currState = State.april;
-                        }
-                        break;
+            }else if(pos.equals("Right")){
+                mecanumDrive.followTrajectorySequence(trajredr1);
+                mecanumDrive.followTrajectorySequence(trajredr2);
 
-                    case spike:
-                        goNext = false;
-                        //splineMovement(-0.05, 0.68, 0.2, 180, 2);
-                        //setLift(0, 0.7);
-                        splineMovement(0.425, -0.05, 0.63, -115, 3);
-
-                        slidePos = 0;
-
-                        if(goNext)
-                        {
-                            hw.autoIntake(-1, 1);
-                            currState = State.backboard;
-                        }
-                        break;
-
-                    case april:
-                        goNext = false;
-
-                        //setLift(-500, -0.7);
-
-                        aprilTagAdjust();
-
-                        slidePos = 500;
-
-                        if(goNext)
-                        {
-                            goStraightPID(-300, 0.01, 0.000138138, 0.005, 4000, -0.5);
-                            hw.liftTimer(-0.7, 1);
-
-                            currState = State.park;
-                        }
-                        break;
-
-                    case park:
-                        //hw.autoIntake(-1, 5);
-                        splineMovement(0, -0.03, -0.1, -89, 1);
-                        //hw.autoDrop(1, 1);
-
-                        //outtakeRetract();
-                        sleep(30000);
-                        break;
-                }
+            }else if(pos.equals("Middle")){
+                mecanumDrive.followTrajectorySequence(trajredm1);
+                mecanumDrive.followTrajectorySequence(trajredm2);
             }
-            else if(pos.equals("Right"))
-            {
-                switch(currState)
-                {
-                    case backboard:
-                        splineMovement(0.27, -0.34, 0.6, -91, 1);
-                        setLift(-500, -0.7);
-
-                        slidePos = 500;
-
-                        if(goNext)
-                        {
-                            sleep(2000);
-                            currState = State.spike;
-                        }
-                        break;
-
-                    case spike:
-                        goNext = false;
-                        splineMovement(0, 0.54, 0.2, 180, 2);
-                        setLift(0, 0.7);
-
-                        slidePos = 0;
-
-                        if(goNext)
-                        {
-                            sleep(1000);
-                            currState = State.park;
-                        }
-                        break;
-
-                    case park:
-                        //hw.autoIntake(-1, 5);
-                        sleep(30000);
-                }
-            }
-            else if(pos.equals("Left"))
-            {
-                switch(currState)
-                {
-                    case spike:
-                        splineMovement(0.53, 0.13, 0.6, -91, 1);
-                        setLift(-500, -0.7);
-
-                        slidePos = 500;
-
-                        telemetry.addData("heading: ", heading);
-                        telemetry.update();
-
-                        if(goNext)
-                        {
-                            sleep(1000);
-                            currState = State.backboard;
-                        }
-                        break;
-
-                    case backboard:
-                        goNext = false;
-                        goStraightPID(-1060, 0.01, 0.000138138, 0.005, 4000, -0.5);
-                        goNext = true;
-
-                        if(goNext)
-                        {
-                            sleep(1000);
-                            currState = State.park;
-                        }
-                        break;
-
-                    case park:
-                        //hw.autoIntake(-1, 5);
-                        sleep(30000);
-                }
-            }
-
-            //adjust based on april tag
-
-            //goStraightPID(-110, 1 / 110, 0.000138138, 0.0005, 2000, -0.6);
-
-            //deposit
-
-            //sleep(30000);
         }
     }
 
