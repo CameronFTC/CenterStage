@@ -97,9 +97,7 @@ public class Bluefar extends LinearOpMode {
                 .waitSeconds(1)
                 .addTemporalMarker(2, () -> hw.lift(-1, 1))
                 .lineTo(new Vector2d(50,50))
-
-
-
+                .turn(Math.toRadians(-90))
                 .build();
 
 
@@ -122,6 +120,7 @@ public class Bluefar extends LinearOpMode {
                 .waitSeconds(1)
                 .addTemporalMarker(2, () -> hw.lift(-1, 1))
                 .lineTo(new Vector2d(50,50))
+                .turn(Math.toRadians(-90))
                 .build();
 
 
@@ -143,6 +142,7 @@ public class Bluefar extends LinearOpMode {
                 .waitSeconds(1)
                 .addTemporalMarker(2, () -> hw.lift(-1, 1))
                 .lineTo(new Vector2d(50,50))
+                .turn(Math.toRadians(-90))
 
 
                 .build();

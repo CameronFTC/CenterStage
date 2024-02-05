@@ -63,12 +63,12 @@ public class CenterStageTeleOp extends LinearOpMode {
                 hw.resetAngle();
                 hw.globalAngle = 0;
             }
-            //
-            //telemetry.addData("Angle: ", hw.getAngle());
-            //telemetry.update();
-
-            //drive();
-            //robotCentric();
+//
+//            telemetry.addData("Angle: ", hw.getAngle());
+//            telemetry.update();
+//
+//            drive();
+//            robotCentric();
             fieldCentric();
             liftMove();
             intakeMove();
