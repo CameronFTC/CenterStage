@@ -99,7 +99,7 @@ public class Redfar extends LinearOpMode {
                 .build();
 
         TrajectorySequence trajredl2 = mecanumDrive.trajectorySequenceBuilder(trajredl1.end())
-                .lineTo(new Vector2d(-20,-32))
+                .lineTo(new Vector2d(-34,-32))
 
                 .build();
         //right auto
