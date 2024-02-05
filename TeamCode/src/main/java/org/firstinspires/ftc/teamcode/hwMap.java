@@ -2,12 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -164,15 +162,15 @@ public class hwMap {
         return globalAngle;
     }
 
-    public void lift(double distance, double pwr, double kP){
+    public void lift(double distance, double pwr){
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         double error;
         while(Math.abs(distance - lift.getCurrentPosition()) > 30){
             error = distance - lift.getCurrentPosition();
-            lift.setPower(error * pwr * kP);
-            lift2.setPower(error * pwr * kP);
+            lift.setPower(error * pwr );
+            lift2.setPower(error * pwr );
         }
         lift.setPower(0);
         lift2.setPower(0);

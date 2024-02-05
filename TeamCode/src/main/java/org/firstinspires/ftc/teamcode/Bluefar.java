@@ -86,13 +86,23 @@ public class Bluefar extends LinearOpMode {
                 .lineTo(new Vector2d(-32,32))
                 .waitSeconds(1)
                 .addTemporalMarker(2, () -> hw.autoIntake(-1, 1))
-
-                .build();
-
-        TrajectorySequence trajl2 = mecanumDrive.trajectorySequenceBuilder(trajl1.end())
                 .lineTo(new Vector2d(-45,32))
+                .lineTo(new Vector2d(-45,10))
+                .lineTo(new Vector2d(50, 10))
+                .turn(Math.toRadians(180))
+                .lineTo(new Vector2d(50,40))
+                .addTemporalMarker(2, () -> hw.lift(1, 1))
+                .waitSeconds(4)
+                .addTemporalMarker(2, () -> hw.autoDrop(1, 1))
+                .waitSeconds(1)
+                .addTemporalMarker(2, () -> hw.lift(-1, 1))
+                .lineTo(new Vector2d(50,50))
+
+
 
                 .build();
+
+
         //right auto
         TrajectorySequence trajr1 = mecanumDrive.trajectorySequenceBuilder(startPose)
 
@@ -102,13 +112,18 @@ public class Bluefar extends LinearOpMode {
 
                 .addTemporalMarker(2, () -> hw.autoIntake(-1, 1))
                 .lineTo(new Vector2d(-38,32))
-
-                .build();
-
-        TrajectorySequence trajr2 = mecanumDrive.trajectorySequenceBuilder(trajr1.end())
                 .lineTo(new Vector2d(-30,32))
-
+                .lineTo(new Vector2d(-35,10))
+                .lineTo(new Vector2d(50, 10))
+                .lineTo(new Vector2d(50,30))
+                .addTemporalMarker(2, () -> hw.lift(1, 1))
+                .waitSeconds(4)
+                .addTemporalMarker(2, () -> hw.autoDrop(1, 1))
+                .waitSeconds(1)
+                .addTemporalMarker(2, () -> hw.lift(-1, 1))
+                .lineTo(new Vector2d(50,50))
                 .build();
+
 
 //middle auto
         TrajectorySequence trajm1 = mecanumDrive.trajectorySequenceBuilder(startPose)
@@ -117,13 +132,21 @@ public class Bluefar extends LinearOpMode {
                 .turn(Math.toRadians(180))
                 .waitSeconds(1)
                 .addTemporalMarker(4, () -> hw.autoIntake(-1, 1))
+                .lineTo(new Vector2d(-50,35))
+                .lineTo(new Vector2d(-50,10))
+                .turn(Math.toRadians(-90))
+                .lineTo(new Vector2d(50, 10))
+                .lineTo(new Vector2d(50,35))
+                .addTemporalMarker(2, () -> hw.lift(1, 1))
+                .waitSeconds(4)
+                .addTemporalMarker(2, () -> hw.autoDrop(1, 1))
+                .waitSeconds(1)
+                .addTemporalMarker(2, () -> hw.lift(-1, 1))
+                .lineTo(new Vector2d(50,50))
+
 
                 .build();
 
-        TrajectorySequence trajm2 = mecanumDrive.trajectorySequenceBuilder(trajm1.end())
-                .lineTo(new Vector2d(-35,45))
-
-                .build();
 
         hw = new hwMap(this);
 
@@ -223,15 +246,16 @@ public class Bluefar extends LinearOpMode {
             if (pos.equals("Left")) {
 
                 mecanumDrive.followTrajectorySequence(trajl1);
-                mecanumDrive.followTrajectorySequence(trajl2);
+
+
 
             }else if(pos.equals("Right")){
                 mecanumDrive.followTrajectorySequence(trajr1);
-                mecanumDrive.followTrajectorySequence(trajr2);
+
 
             }else if(pos.equals("Middle")){
                 mecanumDrive.followTrajectorySequence(trajm1);
-                mecanumDrive.followTrajectorySequence(trajm2);
+
             }
 
 
