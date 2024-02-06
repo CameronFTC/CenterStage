@@ -91,15 +91,15 @@ public class Redfar extends LinearOpMode {
         TrajectorySequence trajredl1 = mecanumDrive.trajectorySequenceBuilder(startPose)
 
                 .lineTo(new Vector2d(-35,-32))
-                .turn(Math.toRadians(-90))
-                .lineTo(new Vector2d(-38,-32))
-                .waitSeconds(.5)
-                .addTemporalMarker(2, () -> hw.autoIntake(-1, 1))
+                .turn(Math.toRadians(90))
+//                .lineTo(new Vector2d(-38,-32))
+//                .waitSeconds(4)
+//                .addTemporalMarker(2, () -> hw.autoIntake(-1, 1))
 
                 .build();
 
         TrajectorySequence trajredl2 = mecanumDrive.trajectorySequenceBuilder(trajredl1.end())
-                .lineTo(new Vector2d(-34,-32))
+//                .lineTo(new Vector2d(-34,-32))
 
                 .build();
         //right auto

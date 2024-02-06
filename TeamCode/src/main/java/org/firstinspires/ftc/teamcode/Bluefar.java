@@ -87,18 +87,19 @@ public class Bluefar extends LinearOpMode {
                 .waitSeconds(1)
                 .addTemporalMarker(2, () -> hw.autoIntake(-1, 1))
                 .lineTo(new Vector2d(-45,32))
-                .lineTo(new Vector2d(-45,10))
-                .lineTo(new Vector2d(50, 10))
-                .turn(Math.toRadians(180))
-                .lineTo(new Vector2d(50,40))
-                .addTemporalMarker(2, () -> hw.lift(1, 1))
-                .waitSeconds(4)
-                .addTemporalMarker(2, () -> hw.autoDrop(1, 1))
-                .waitSeconds(1)
-                .addTemporalMarker(2, () -> hw.lift(-1, 1))
-                .lineTo(new Vector2d(50,50))
-                .turn(Math.toRadians(-90))
-                .build();
+//                .lineTo(new Vector2d(-45,10))
+//                .lineTo(new Vector2d(50, 10))
+//                .turn(Math.toRadians(180))
+//                .lineTo(new Vector2d(50,40))
+//                .addTemporalMarker(2, () -> hw.lift(1, 1))
+//                .waitSeconds(4)
+//                .addTemporalMarker(2, () -> hw.autoDrop(1, 1))
+//                .waitSeconds(1)
+//                .addTemporalMarker(2, () -> hw.lift(-1, 1))
+//                .lineTo(new Vector2d(50,50))
+//                .turn(Math.toRadians(-90)
+//
+                  .build();
 
 
         //right auto
@@ -183,7 +184,7 @@ public class Bluefar extends LinearOpMode {
 
             double TSE = StickObserverPipeline.xCoord;
             //pos = "Right";
-            if (StickObserverPipeline.maxContour < 500) {
+            if (StickObserverPipeline.maxContour < 2000) {
                 pos = "Left";
 
             } else if (TSE >= 0 && TSE < 300) {

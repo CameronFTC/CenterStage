@@ -18,8 +18,7 @@ public class MeepMeepTest{
                                         .lineTo(new Vector2d(-35,-32))
                                         .turn(Math.toRadians(-90))
                                         .lineTo(new Vector2d(-38,-32))
-                                        .lineTo(new Vector2d(-34,-32))
-
+                                        .waitSeconds(4)
                                         //intake
         //                                .strafeLeft(25)
         //                                .back(30)
