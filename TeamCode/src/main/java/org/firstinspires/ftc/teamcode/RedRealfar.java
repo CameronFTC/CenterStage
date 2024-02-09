@@ -21,8 +21,8 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "Bluefar", group = "Autonomous")
-public class Bluefar extends LinearOpMode {
+@Autonomous(name = "Red Real Far", group = "Autonomous")
+public class RedRealfar extends LinearOpMode {
 //    @Override
 //    public void runOpMode() throws InterruptedException {
 //
@@ -84,7 +84,7 @@ public class Bluefar extends LinearOpMode {
                 .lineTo(new Vector2d(-35,32))
                 .turn(Math.toRadians(-90))
                 .lineTo(new Vector2d(-32,32))
-                .waitSeconds(4)
+                .waitSeconds(1)
                 .addTemporalMarker(2, () -> hw.autoIntake(-1, 1))
                 .lineTo(new Vector2d(-45,32))
 //                .lineTo(new Vector2d(-45,10))
@@ -107,11 +107,11 @@ public class Bluefar extends LinearOpMode {
 
                 .lineTo(new Vector2d(-35,32))
                 .turn(Math.toRadians(90))
-                .waitSeconds(4)
+                .waitSeconds(1)
 
                 .addTemporalMarker(2, () -> hw.autoIntake(-1, 1))
-                .lineTo(new Vector2d(-37,32))
-                .lineTo(new Vector2d(-32,32))
+                .lineTo(new Vector2d(-38,32))
+                .lineTo(new Vector2d(-30,32))
 //                .lineTo(new Vector2d(-35,10))
 //                .lineTo(new Vector2d(50, 10))
 //                .lineTo(new Vector2d(50,30))
@@ -128,11 +128,12 @@ public class Bluefar extends LinearOpMode {
 //middle auto
         TrajectorySequence trajm1 = mecanumDrive.trajectorySequenceBuilder(startPose)
 
-                .lineTo(new Vector2d(-35,35))
+                .lineTo(new Vector2d(-35,32))
                 .turn(Math.toRadians(180))
-                .waitSeconds(1)
+
+                .waitSeconds(4)
                 .addTemporalMarker(4, () -> hw.autoIntake(-1, 1))
-                .lineTo(new Vector2d(-50,35))
+                .lineTo(new Vector2d(-35,45))
 //                .lineTo(new Vector2d(-50,10))
 //                .turn(Math.toRadians(-90))
 //                .lineTo(new Vector2d(50, 10))
@@ -172,7 +173,7 @@ public class Bluefar extends LinearOpMode {
         //vision
         String pos = "Left";
 
-        CVMaster cv = new CVMaster(this, "Blue");
+        CVMaster cv = new CVMaster(this, "Red");
 //      call the function to startStreaming
         cv.observeStick();
         counter = 0;
@@ -184,13 +185,13 @@ public class Bluefar extends LinearOpMode {
 
             double TSE = StickObserverPipeline.xCoord;
             //pos = "Right";
-            if (StickObserverPipeline.maxContour < 2000) {
+            if (StickObserverPipeline.maxContour < 3000) {
                 pos = "Left";
 
             } else if (TSE >= 0 && TSE < 300) {
                 pos = "Middle";
 
-            } else if (TSE > 150) {
+            } else if (TSE >= 150) {
                 pos = "Right" ;
 
             }

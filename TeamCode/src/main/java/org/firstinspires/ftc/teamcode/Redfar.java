@@ -29,7 +29,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 
 
-@Autonomous(name = "Red Far", group = "Autonomous")
+//@Autonomous(name = "poopy", group = "Autonomous")
 public class Redfar extends LinearOpMode {
 
 
@@ -78,58 +78,82 @@ public class Redfar extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive mecanumDrive = new SampleMecanumDrive(hardwareMap);
-
-
-        Pose2d startPose = (new Pose2d(-35, -62, Math.toRadians(90)));
+        Pose2d startPose = (new Pose2d(-35, 62, Math.toRadians(270)));
         ElapsedTime timer = new ElapsedTime();
         Vector2d myVector = new Vector2d(0, 0);
+
+
 
 
         mecanumDrive.setPoseEstimate(startPose);
 
 //left auto
-        TrajectorySequence trajredl1 = mecanumDrive.trajectorySequenceBuilder(startPose)
+        TrajectorySequence trajl1 = mecanumDrive.trajectorySequenceBuilder(startPose)
 
-                .lineTo(new Vector2d(-35,-32))
-                .turn(Math.toRadians(90))
-//                .lineTo(new Vector2d(-38,-32))
-//                .waitSeconds(4)
-//                .addTemporalMarker(2, () -> hw.autoIntake(-1, 1))
-
-                .build();
-
-        TrajectorySequence trajredl2 = mecanumDrive.trajectorySequenceBuilder(trajredl1.end())
-//                .lineTo(new Vector2d(-34,-32))
-
-                .build();
-        //right auto
-        TrajectorySequence trajredr1 = mecanumDrive.trajectorySequenceBuilder(startPose)
-
-                .lineTo(new Vector2d(-35,-32))
-                .turn(Math.toRadians(90))
-                .lineTo(new Vector2d(-32,-32))
-                .waitSeconds(.5)
+                .lineTo(new Vector2d(-35,32))
+                .turn(Math.toRadians(-90))
+                .lineTo(new Vector2d(-32,32))
+                .waitSeconds(1)
                 .addTemporalMarker(2, () -> hw.autoIntake(-1, 1))
-
+                .lineTo(new Vector2d(-45,32))
+//                .lineTo(new Vector2d(-45,10))
+//                .lineTo(new Vector2d(50, 10))
+//                .turn(Math.toRadians(180))
+//                .lineTo(new Vector2d(50,40))
+//                .addTemporalMarker(2, () -> hw.lift(1, 1))
+//                .waitSeconds(4)
+//                .addTemporalMarker(2, () -> hw.autoDrop(1, 1))
+//                .waitSeconds(1)
+//                .addTemporalMarker(2, () -> hw.lift(-1, 1))
+//                .lineTo(new Vector2d(50,50))
+//                .turn(Math.toRadians(-90)
+//
                 .build();
 
-        TrajectorySequence trajredr2 = mecanumDrive.trajectorySequenceBuilder(trajredr1.end())
-                .lineTo(new Vector2d(-45,-32))
 
+        //right auto
+        TrajectorySequence trajr1 = mecanumDrive.trajectorySequenceBuilder(startPose)
+
+                .lineTo(new Vector2d(-35,32))
+                .turn(Math.toRadians(90))
+                .waitSeconds(1)
+
+                .addTemporalMarker(2, () -> hw.autoIntake(-1, 1))
+                .lineTo(new Vector2d(-38,32))
+                .lineTo(new Vector2d(-30,32))
+//                .lineTo(new Vector2d(-35,10))
+//                .lineTo(new Vector2d(50, 10))
+//                .lineTo(new Vector2d(50,30))
+//                .addTemporalMarker(2, () -> hw.lift(1, 1))
+//                .waitSeconds(4)
+//                .addTemporalMarker(2, () -> hw.autoDrop(1, 1))
+//                .waitSeconds(1)
+//                .addTemporalMarker(2, () -> hw.lift(-1, 1))
+//                .lineTo(new Vector2d(50,50))
+//                .turn(Math.toRadians(-90))
                 .build();
+
 
 //middle auto
-        TrajectorySequence trajredm1 = mecanumDrive.trajectorySequenceBuilder(startPose)
+        TrajectorySequence trajm1 = mecanumDrive.trajectorySequenceBuilder(startPose)
 
-                .lineTo(new Vector2d(-35,-32))
+                .lineTo(new Vector2d(-35,35))
                 .turn(Math.toRadians(180))
-                .waitSeconds(.5)
-                .addTemporalMarker(2, () -> hw.autoIntake(-1, 1))
+                .waitSeconds(1)
+                .addTemporalMarker(4, () -> hw.autoIntake(-1, 1))
+                .lineTo(new Vector2d(-50,35))
+//                .lineTo(new Vector2d(-50,10))
+//                .turn(Math.toRadians(-90))
+//                .lineTo(new Vector2d(50, 10))
+//                .lineTo(new Vector2d(50,35))
+//                .addTemporalMarker(2, () -> hw.lift(1, 1))
+//                .waitSeconds(4)
+//                .addTemporalMarker(2, () -> hw.autoDrop(1, 1))
+//                .waitSeconds(1)
+//                .addTemporalMarker(2, () -> hw.lift(-1, 1))
+//                .lineTo(new Vector2d(50,50))
+//                .turn(Math.toRadians(-90))
 
-                .build();
-
-        TrajectorySequence trajredm2 = mecanumDrive.trajectorySequenceBuilder(trajredm1.end())
-                .lineTo(new Vector2d(-35,-38))
 
                 .build();
 
@@ -220,7 +244,7 @@ public class Redfar extends LinearOpMode {
 
         april = new AprilTag(this);
 
-        pos = "Middle";
+       // pos = "Middle";
         DESIRED_TAG_ID = 5;
         //currState = State.spike;
         while(opModeIsActive() && !isStopRequested())
@@ -239,16 +263,17 @@ public class Redfar extends LinearOpMode {
 
             if (pos.equals("Left")) {
 
-                mecanumDrive.followTrajectorySequence(trajredl1);
-                mecanumDrive.followTrajectorySequence(trajredl2);
+                mecanumDrive.followTrajectorySequence(trajl1);
+//                mecanumDrive.followTrajectorySequence(trajredl2);
 
             }else if(pos.equals("Right")){
-                mecanumDrive.followTrajectorySequence(trajredr1);
-                mecanumDrive.followTrajectorySequence(trajredr2);
+                mecanumDrive.followTrajectorySequence(trajr1);
+//                mecanumDrive.followTrajectorySequence(trajredr2);
 
             }else if(pos.equals("Middle")){
-                mecanumDrive.followTrajectorySequence(trajredm1);
-                mecanumDrive.followTrajectorySequence(trajredm2);
+                mecanumDrive.followTrajectorySequence(trajm1);
+                //mecanumDrive.followTrajectorySequence(trajredm2);
+                sleep(3000);
             }
         }
     }
