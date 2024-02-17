@@ -6,9 +6,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
 import org.firstinspires.ftc.teamcode.drive.TwoWheelTrackingLocalizer;
 
@@ -96,6 +98,7 @@ public class CenterStageTeleOp extends LinearOpMode {
             }
             if (gamepad1.b) {
                 currLift = liftHeight.medium;
+                currLift = liftHeight.medium;
                 //hw.outtake1.setPosition(1);
                 //hw.outtake2.setPosition(0.9);
             }
@@ -165,7 +168,7 @@ public class CenterStageTeleOp extends LinearOpMode {
             //ham
             lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         }
-        else if(GtoB < .9){
+        else if(GtoB < 1.2){
             col = "purple";
             lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.VIOLET);
         }
@@ -232,7 +235,9 @@ public class CenterStageTeleOp extends LinearOpMode {
         hw.bL.setPower(blPwr);
         hw.fR.setPower(-frPwr);
         hw.bR.setPower(-brPwr);
-        if (gamepad1.right_bumper) {
+        hw.distance1= hardwareMap.get(DistanceSensor.class, "distance1");
+        hw.distance2= hardwareMap.get(DistanceSensor.class, "distance2");
+        if (hw.distance1.getDistance(DistanceUnit.CM)<10 && hw.distance2.getDistance(DistanceUnit.CM)<10) {
             fieldCentricSlow();
         }
     }
@@ -262,10 +267,10 @@ public class CenterStageTeleOp extends LinearOpMode {
             rotX = rotX * 1.1;
 
             double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-            double flPwr = (rotY + rotX + rx) / denominator/2;
-            double blPwr = (rotY - rotX + rx) / denominator/2;
-            double frPwr = (rotY - rotX - rx) / denominator/2;
-            double brPwr = (rotY + rotX - rx) / denominator/2;
+            double flPwr = (rotY + rotX + rx) / denominator*.2;
+            double blPwr = (rotY - rotX + rx) / denominator*.2;
+            double frPwr = (rotY - rotX - rx) / denominator*.2;
+            double brPwr = (rotY + rotX - rx) / denominator*.2;
 
             hw.fL.setPower(flPwr);
             hw.bL.setPower(blPwr );

@@ -81,12 +81,12 @@ public class RedRealfar extends LinearOpMode {
 //left auto
         TrajectorySequence trajl1 = mecanumDrive.trajectorySequenceBuilder(startPose)
 
-                .lineTo(new Vector2d(-35,32))
+                .lineTo(new Vector2d(-35,35))
                 .turn(Math.toRadians(-90))
-                .lineTo(new Vector2d(-32,32))
+                .lineTo(new Vector2d(-33,35))
                 .waitSeconds(1)
                 .addTemporalMarker(2, () -> hw.autoIntake(-1, 1))
-                .lineTo(new Vector2d(-45,32))
+                .lineTo(new Vector2d(-45,35))
 //                .lineTo(new Vector2d(-45,10))
 //                .lineTo(new Vector2d(50, 10))
 //                .turn(Math.toRadians(180))
@@ -128,12 +128,12 @@ public class RedRealfar extends LinearOpMode {
 //middle auto
         TrajectorySequence trajm1 = mecanumDrive.trajectorySequenceBuilder(startPose)
 
-                .lineTo(new Vector2d(-35,32))
+                .lineTo(new Vector2d(-35,35))
                 .turn(Math.toRadians(180))
 
-                .waitSeconds(4)
+                .waitSeconds(1)
                 .addTemporalMarker(4, () -> hw.autoIntake(-1, 1))
-                .lineTo(new Vector2d(-35,45))
+                .lineTo(new Vector2d(-35,43))
 //                .lineTo(new Vector2d(-50,10))
 //                .turn(Math.toRadians(-90))
 //                .lineTo(new Vector2d(50, 10))

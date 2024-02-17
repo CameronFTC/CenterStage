@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -15,6 +16,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 //import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 
 public class hwMap {
+
+    public DistanceSensor distance1;
+    public DistanceSensor distance2;
+
 
     public DcMotor bR;
     public DcMotor fR;
@@ -162,15 +167,15 @@ public class hwMap {
         return globalAngle;
     }
 
-    public void lift(double distance, double pwr){
+    public void lift(double distance, double pwr, double kp){
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         double error;
         while(Math.abs(distance - lift.getCurrentPosition()) > 30){
             error = distance - lift.getCurrentPosition();
-            lift.setPower(error * pwr );
-            lift2.setPower(error * pwr );
+            lift.setPower(error * pwr * kp);
+            lift2.setPower(error * pwr * kp);
         }
         lift.setPower(0);
         lift2.setPower(0);

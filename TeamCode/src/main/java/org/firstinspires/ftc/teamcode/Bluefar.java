@@ -82,11 +82,11 @@ public class Bluefar extends LinearOpMode {
         TrajectorySequence trajl1 = mecanumDrive.trajectorySequenceBuilder(startPose)
 
                 .lineTo(new Vector2d(-35,32))
-                .turn(Math.toRadians(-90))
-                .lineTo(new Vector2d(-32,32))
-                .waitSeconds(4)
-                .addTemporalMarker(2, () -> hw.autoIntake(-1, 1))
-                .lineTo(new Vector2d(-45,32))
+//                .turn(Math.toRadians(-90))
+//                .lineTo(new Vector2d(-32.5,32))
+//                .waitSeconds(1)
+//                .addTemporalMarker(2, () -> hw.autoIntake(-1.5, 2))
+//                .lineTo(new Vector2d(-45,32))
 //                .lineTo(new Vector2d(-45,10))
 //                .lineTo(new Vector2d(50, 10))
 //                .turn(Math.toRadians(180))
@@ -105,23 +105,25 @@ public class Bluefar extends LinearOpMode {
         //right auto
         TrajectorySequence trajr1 = mecanumDrive.trajectorySequenceBuilder(startPose)
 
-                .lineTo(new Vector2d(-35,32))
-                .turn(Math.toRadians(90))
-                .waitSeconds(4)
-
-                .addTemporalMarker(2, () -> hw.autoIntake(-1, 1))
-                .lineTo(new Vector2d(-37,32))
-                .lineTo(new Vector2d(-32,32))
-//                .lineTo(new Vector2d(-35,10))
-//                .lineTo(new Vector2d(50, 10))
-//                .lineTo(new Vector2d(50,30))
-//                .addTemporalMarker(2, () -> hw.lift(1, 1))
-//                .waitSeconds(4)
-//                .addTemporalMarker(2, () -> hw.autoDrop(1, 1))
-//                .waitSeconds(1)
-//                .addTemporalMarker(2, () -> hw.lift(-1, 1))
-//                .lineTo(new Vector2d(50,50))
+                .lineTo(new Vector2d(-35,34))
+//                .turn(Math.toRadians(90))
+//                .waitSeconds(2)
+//                .addTemporalMarker(2, () -> hw.autoIntake(-1, 2))
+//
+//                .lineTo(new Vector2d(-32,34))
+//                //strafe
+//                .lineTo(new Vector2d(-32,32))
+//                .waitSeconds(2)
 //                .turn(Math.toRadians(-90))
+//                //going to the spit to wait 10 secs
+//                .lineTo(new Vector2d(-43,41.5))
+//                .waitSeconds(1)
+//                //going to backboard
+//                .lineTo(new Vector2d(-48,41.5))
+//                .turn(Math.toRadians(90))
+//                .lineTo(new Vector2d(-47,41.5))
+//                .addTemporalMarker(2, () -> hw.lift(1, 1,1))
+
                 .build();
 
 
@@ -129,10 +131,10 @@ public class Bluefar extends LinearOpMode {
         TrajectorySequence trajm1 = mecanumDrive.trajectorySequenceBuilder(startPose)
 
                 .lineTo(new Vector2d(-35,35))
-                .turn(Math.toRadians(180))
-                .waitSeconds(1)
-                .addTemporalMarker(4, () -> hw.autoIntake(-1, 1))
-                .lineTo(new Vector2d(-50,35))
+//                .turn(Math.toRadians(-180))
+//                .waitSeconds(1)
+//                .addTemporalMarker(4, () -> hw.autoIntake(-1.5, 2))
+//                .lineTo(new Vector2d(-35,40))
 //                .lineTo(new Vector2d(-50,10))
 //                .turn(Math.toRadians(-90))
 //                .lineTo(new Vector2d(50, 10))
@@ -184,7 +186,7 @@ public class Bluefar extends LinearOpMode {
 
             double TSE = StickObserverPipeline.xCoord;
             //pos = "Right";
-            if (StickObserverPipeline.maxContour < 2000) {
+            if (StickObserverPipeline.maxContour < 1500) {
                 pos = "Left";
 
             } else if (TSE >= 0 && TSE < 300) {
