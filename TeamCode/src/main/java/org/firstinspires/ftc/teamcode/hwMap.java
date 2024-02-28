@@ -75,6 +75,9 @@ public class hwMap {
 
         //tilt = opmode.hardwareMap.get(Servo.class, "tilt");
         dropper = opmode.hardwareMap.get(CRServo.class, "dropper");
+
+        distance1= opmode.hardwareMap.get(DistanceSensor.class, "distance1");
+        distance2= opmode.hardwareMap.get(DistanceSensor.class, "distance2");
         //outtake1 = opmode.hardwareMap.get(Servo.class, "outtake1");
 
         //colorSensor = opmode.hardwareMap.get(ModernRoboticsI2cColorSensor.class, "colorSensor");

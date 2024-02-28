@@ -217,6 +217,8 @@ public class CenterStageTeleOp extends LinearOpMode {
         telemetry.addData("bruh: ", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
         telemetry.addData("start: ", startAngle);
         telemetry.addData("angle: ", hw.angle());
+        telemetry.addData("distance1: ", hw.distance1.getDistance(DistanceUnit.CM));
+        telemetry.addData("distance2: ", hw.distance2.getDistance(DistanceUnit.CM));
         //telemetry.addData("encoder", TwoWheelTrackingLocalizer.getEncoderVals());
         telemetry.update();
 
@@ -235,12 +237,21 @@ public class CenterStageTeleOp extends LinearOpMode {
         hw.bL.setPower(blPwr);
         hw.fR.setPower(-frPwr);
         hw.bR.setPower(-brPwr);
-        hw.distance1= hardwareMap.get(DistanceSensor.class, "distance1");
-        hw.distance2= hardwareMap.get(DistanceSensor.class, "distance2");
-        if (hw.distance1.getDistance(DistanceUnit.CM)<10 && hw.distance2.getDistance(DistanceUnit.CM)<10) {
-            fieldCentricSlow();
+
+        if (hw.distance1.getDistance(DistanceUnit.CM)>30 || hw.distance2.getDistance(DistanceUnit.CM)>30 ) {
+
+                hw.fL.setPower(flPwr);
+                hw.bL.setPower(blPwr);
+                hw.fR.setPower(-frPwr);
+                hw.bR.setPower(-brPwr);
+            }else{
+
+                hw.fL.setPower(flPwr*.5);
+                hw.bL.setPower(blPwr*.5);
+                hw.fR.setPower(-frPwr*.5);
+                hw.bR.setPower(-brPwr*.5);
+            }
         }
-    }
 
     private void fieldCentricSlow() {
 
@@ -267,15 +278,30 @@ public class CenterStageTeleOp extends LinearOpMode {
             rotX = rotX * 1.1;
 
             double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-            double flPwr = (rotY + rotX + rx) / denominator*.2;
-            double blPwr = (rotY - rotX + rx) / denominator*.2;
-            double frPwr = (rotY - rotX - rx) / denominator*.2;
-            double brPwr = (rotY + rotX - rx) / denominator*.2;
+            double flPwr = (rotY + rotX + rx) / denominator*.75;
 
+            double blPwr = (rotY - rotX + rx) / denominator*.75;
+            double frPwr = (rotY - rotX - rx) / denominator*.75;
+            double brPwr = (rotY + rotX - rx) / denominator*.75;
+
+        hw.fL.setPower(flPwr);
+        hw.bL.setPower(blPwr);
+        hw.fR.setPower(-frPwr);
+        hw.bR.setPower(-brPwr);
+
+        if (hw.distance1.getDistance(DistanceUnit.CM)<30 || hw.distance2.getDistance(DistanceUnit.CM)<30 ) {
+            if(gamepad1.left_stick_x<0) {
+                hw.fL.setPower(flPwr * .5);
+                hw.bL.setPower(blPwr * .5);
+                hw.fR.setPower(-frPwr * .5);
+                hw.bR.setPower(-brPwr * .5);
+            }
+        }else{
             hw.fL.setPower(flPwr);
-            hw.bL.setPower(blPwr );
+            hw.bL.setPower(blPwr);
             hw.fR.setPower(-frPwr);
-            hw.bR.setPower(-brPwr );
+            hw.bR.setPower(-brPwr);
+        }
 
         }
 
@@ -289,15 +315,25 @@ public class CenterStageTeleOp extends LinearOpMode {
         // This ensures all the powers maintain the same ratio,
         // but only if at least one is out of the range [-1, 1]
         double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-        double frontLeftPower = (y + x + rx) / denominator;
-        double backLeftPower = (y - x + rx) / denominator;
-        double frontRightPower = (y - x - rx) / denominator;
-        double backRightPower = (y + x - rx) / denominator;
+        double flPwr = (y + x + rx) / denominator;
+        double blPwr = (y - x + rx) / denominator;
+        double frPwr = (y - x - rx) / denominator;
+        double brPwr = (y + x - rx) / denominator;
 
-        hw.fL.setPower(-frontLeftPower);
-        hw.bL.setPower(-backLeftPower);
-        hw.fR.setPower(-frontRightPower);
-        hw.bR.setPower(-backRightPower);
+
+        if (hw.distance1.getDistance(DistanceUnit.CM)<30 || hw.distance2.getDistance(DistanceUnit.CM)<30 ) {
+            if(gamepad1.left_stick_x<0) {
+                hw.fL.setPower(flPwr * .5);
+                hw.bL.setPower(blPwr * .5);
+                hw.fR.setPower(-frPwr * .5);
+                hw.bR.setPower(-brPwr * .5);
+            }
+        }else{
+            hw.fL.setPower(flPwr);
+            hw.bL.setPower(blPwr);
+            hw.fR.setPower(-frPwr);
+            hw.bR.setPower(-brPwr);
+        }
     }
 
     public double getAngle() {
