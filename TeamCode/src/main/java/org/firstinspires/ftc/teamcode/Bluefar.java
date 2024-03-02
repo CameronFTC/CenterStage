@@ -114,6 +114,7 @@ public class Bluefar extends LinearOpMode {
                 .build();
         TrajectorySequence trajr3 = mecanumDrive.trajectorySequenceBuilder(trajr2.end())
                 //change for cycle
+                .waitSeconds(.5)
                 .back(11)
                 .build();
         TrajectorySequence trajr4 = mecanumDrive.trajectorySequenceBuilder(trajr3.end())
@@ -134,16 +135,16 @@ public class Bluefar extends LinearOpMode {
                 .forward(30)
                 .turn(Math.toRadians(180))
                 .forward(5)
-                .waitSeconds(2)
+                .back(6)
                 .build();
         TrajectorySequence trajm2 = mecanumDrive.trajectorySequenceBuilder(trajm1.end())
                 .turn(Math.toRadians(-90))
-                .forward(40)
+                .forward(48)
                 .waitSeconds(2)
                 .build();
         TrajectorySequence trajm3 = mecanumDrive.trajectorySequenceBuilder(trajm2.end())
                 .back(8)
-                .waitSeconds(4)
+                //.waitSeconds(4)
                 .build();
         TrajectorySequence trajm4 = mecanumDrive.trajectorySequenceBuilder(trajm3.end())
                 .strafeLeft(18)
@@ -265,7 +266,6 @@ public class Bluefar extends LinearOpMode {
                 hw.autoIntake(-1,1.25);
                 mecanumDrive.followTrajectorySequence(trajr2);
                 setLift(60, -.6);
-                wait(250);
                 hw.dropper.setPower(.5);
                 mecanumDrive.followTrajectorySequence(trajr3);
                 setLift(60,.6);
@@ -277,13 +277,13 @@ public class Bluefar extends LinearOpMode {
 
             }else if(pos.equals("Middle")){
                 mecanumDrive.followTrajectorySequence(trajm1);
-                //hw.autoIntake(-1,1.25);
+                hw.autoIntake(-1,1.25);
                 mecanumDrive.followTrajectorySequence(trajm2);
-//                setLift(75, -.6);
-//                hw.dropper.setPower(.5);
+                setLift(60, -.6);
+                hw.dropper.setPower(.5);
                 mecanumDrive.followTrajectorySequence(trajm3);
-//                setLift(75,.6);
-//                hw.dropper.setPower(0);
+                setLift(75,.6);
+                hw.dropper.setPower(0);
                 mecanumDrive.followTrajectorySequence(trajm4);
 
 
