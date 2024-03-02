@@ -178,7 +178,7 @@ public class BlueLeftAuto extends LinearOpMode {
                     /*case backboard:
                         splineMovement(-0.525, 0.32, -0.3, 91, 4);
                         outtakeExtend();
-                        setLift(-1325, -0.7);
+                        setLift(- -0.7);
 
                         slidePos = 500;
 

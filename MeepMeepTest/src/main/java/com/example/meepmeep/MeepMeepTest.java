@@ -14,20 +14,22 @@ public class MeepMeepTest{
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                                drive.trajectorySequenceBuilder(new Pose2d(-35, -58, Math.toRadians(90)))
-                                        .lineTo(new Vector2d(-35,-32))
+                                drive.trajectorySequenceBuilder(new Pose2d(10, 58, Math.toRadians(-90)))
+                                        //.lineToLinearHeading(new Pose2d(40,30))
+                                        .forward(30)
+                                        .turn(Math.toRadians(180))
+                                        .forward(5)
+                                        .waitSeconds(2)
+
                                         .turn(Math.toRadians(-90))
-                                        .lineTo(new Vector2d(-45,-32))
-                                        .waitSeconds(1)
-                                        .lineTo(new Vector2d(-32,-32))
-                                        //intake
-        //                                .strafeLeft(25)
-        //                                .back(30)
-        //                                .lineToLinearHeading(new Pose2d(47, 38, Math.toRadians(-90)))
-        //                                .turn(Math.toRadians(90))
-        //                                .strafeLeft(5)
-                                        //outtake
-                                        //.strafeLeft(10)
+                                        .forward(40)
+                                        .waitSeconds(2)
+
+                                        .back(7)
+                                        .waitSeconds(2)
+
+                                        .strafeLeft(18)
+                                        .forward(5)
                                         .build()
                 );
 

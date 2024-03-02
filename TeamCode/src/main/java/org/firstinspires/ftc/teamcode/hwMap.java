@@ -170,7 +170,7 @@ public class hwMap {
         return globalAngle;
     }
 
-    public void lift(double distance, double pwr, double kp){
+    public void lift(double distance, double pwr, int kp){
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
