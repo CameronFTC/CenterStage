@@ -81,21 +81,23 @@ public class Bluefar extends LinearOpMode {
 //left auto
 
         TrajectorySequence trajl1 = mecanumDrive.trajectorySequenceBuilder(startPose)
-                .forward(30)
+                .forward(33)
                 .turn(Math.toRadians(-90))
-                .back(5)
-                .waitSeconds(2)
+                .back(2)
+
                 .build();
         TrajectorySequence trajl2 = mecanumDrive.trajectorySequenceBuilder(trajl1.end())
+                .forward(6)
+                .strafeRight(14)
                 .turn(Math.toRadians(180))
-                .forward(40)
-                .waitSeconds(2)
+                .forward(51)
                 .build();
         TrajectorySequence trajl3 = mecanumDrive.trajectorySequenceBuilder(trajl2.end())
+                .waitSeconds(.45)
                 .back(7)
-                .waitSeconds(2)
                 .build();
         TrajectorySequence trajl4 = mecanumDrive.trajectorySequenceBuilder(trajl3.end())
+                .waitSeconds(.45)
                 .strafeLeft(18)
                 .forward(5)
                 .build();
@@ -134,19 +136,22 @@ public class Bluefar extends LinearOpMode {
         TrajectorySequence trajm1 = mecanumDrive.trajectorySequenceBuilder(startPose)
                 .forward(30)
                 .turn(Math.toRadians(180))
-                .forward(5)
-                .back(6)
                 .build();
         TrajectorySequence trajm2 = mecanumDrive.trajectorySequenceBuilder(trajm1.end())
+                .forward(15)
                 .turn(Math.toRadians(-90))
                 .forward(48)
-                .waitSeconds(2)
+                .strafeRight(9)
+                .waitSeconds(.25)
+
                 .build();
         TrajectorySequence trajm3 = mecanumDrive.trajectorySequenceBuilder(trajm2.end())
-                .back(8)
+                .waitSeconds(.45)
+                .back(11)
                 //.waitSeconds(4)
                 .build();
         TrajectorySequence trajm4 = mecanumDrive.trajectorySequenceBuilder(trajm3.end())
+                .waitSeconds(.5)
                 .strafeLeft(18)
               //  .forward(5)
                 .build();
@@ -200,7 +205,7 @@ public class Bluefar extends LinearOpMode {
                 pos = "Right" ;
 
             }
-            pos="Middle";
+            pos="Left";
 
         }
 
@@ -254,9 +259,25 @@ public class Bluefar extends LinearOpMode {
             if (pos.equals("Left")) {
 
                 mecanumDrive.followTrajectorySequence(trajl1);
+                hw.autoIntake(-1,1.25);
                 mecanumDrive.followTrajectorySequence(trajl2);
+                hw.lift.setPower(-1);
+                hw.lift2.setPower(-1);
+                hw.dropper.setPower(.5);
+                sleep(500);
+                hw.lift.setPower(0);
+                hw.lift2.setPower(0);
+                hw.dropper.setPower(.5);
                 mecanumDrive.followTrajectorySequence(trajl3);
+                hw.lift.setPower(1);
+                hw.lift2.setPower(1);
+                sleep(500);
+                hw.lift.setPower(0);
+                hw.lift2.setPower(0);
+                hw.dropper.setPower(0);
                 mecanumDrive.followTrajectorySequence(trajl4);
+                slidePos=0;
+
 
 
 
@@ -265,12 +286,23 @@ public class Bluefar extends LinearOpMode {
                 mecanumDrive.followTrajectorySequence(trajr1);
                 hw.autoIntake(-1,1.25);
                 mecanumDrive.followTrajectorySequence(trajr2);
-                setLift(60, -.6);
+                hw.lift.setPower(-1);
+                hw.lift2.setPower(-1);
+                hw.dropper.setPower(.5);
+                sleep(500);
+                hw.lift.setPower(0);
+                hw.lift2.setPower(0);
                 hw.dropper.setPower(.5);
                 mecanumDrive.followTrajectorySequence(trajr3);
-                setLift(60,.6);
+                hw.lift.setPower(1);
+                hw.lift2.setPower(1);
+                sleep(500);
+                hw.lift.setPower(0);
+                hw.lift2.setPower(0);
                 hw.dropper.setPower(0);
                 mecanumDrive.followTrajectorySequence(trajr4);
+                slidePos=0;
+
 
 
 
@@ -279,12 +311,21 @@ public class Bluefar extends LinearOpMode {
                 mecanumDrive.followTrajectorySequence(trajm1);
                 hw.autoIntake(-1,1.25);
                 mecanumDrive.followTrajectorySequence(trajm2);
-                setLift(60, -.6);
+                hw.lift.setPower(-1);
+                hw.lift2.setPower(-1);
                 hw.dropper.setPower(.5);
+                sleep(500);
+                hw.lift.setPower(0);
+                hw.lift2.setPower(0);
                 mecanumDrive.followTrajectorySequence(trajm3);
-                setLift(75,.6);
+                hw.lift.setPower(1);
+                hw.lift2.setPower(1);
+                sleep(500);
+                hw.lift.setPower(0);
+                hw.lift2.setPower(0);
                 hw.dropper.setPower(0);
                 mecanumDrive.followTrajectorySequence(trajm4);
+                slidePos=0;
 
 
 
@@ -517,7 +558,7 @@ public class Bluefar extends LinearOpMode {
         if (Math.abs(target - currPos) > 75) {
             double error = target - currPos;
             hw.lift2.setPower(pwr * kP * (error) * 2);
-            hw.lift.setPower(pwr * kP * (error) * -2);
+            hw.lift.setPower(pwr * kP * (error) * 2);
         } else {
             hw.lift2.setPower(0);
             hw.lift.setPower(0);

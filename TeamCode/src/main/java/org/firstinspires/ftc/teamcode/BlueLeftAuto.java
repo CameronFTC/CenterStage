@@ -106,6 +106,7 @@ public class BlueLeftAuto extends LinearOpMode {
             telemetry.addData("Coords: ", StickObserverPipeline.xCoord + " " + StickObserverPipeline.yCoord);
             telemetry.addData("Area: ", StickObserverPipeline.maxContour);
             telemetry.addData("Pos: ", pos);
+            telemetry.addData("liftstart: ", liftStart);
             telemetry.update();
 
             double TSE = StickObserverPipeline.xCoord;
@@ -279,6 +280,11 @@ public class BlueLeftAuto extends LinearOpMode {
             }
             else if(pos.equals("Left"))
             {
+                hw.lift.setPower(-1);
+                hw.lift2.setPower(-1);
+                sleep(250);
+                hw.lift.setPower(1);
+                hw.lift2.setPower(1);
                 switch(currState)
                 {
                    /* case backboard:
@@ -294,60 +300,60 @@ public class BlueLeftAuto extends LinearOpMode {
                         }
                         break;*/
 
-                    case spike:
-                        //splineMovement(-0.81, -0.061, -0.2562, 88, 7);
-                        //setLift(-1275, -0.4);
-                        //outtakeExtend();
-
-                        //slidePos = 500;
-                        goNext = true;
-                        telemetry.addData("heading: ", heading);
-                        telemetry.update();
-
-                        if(goNext)
-                        {
-                            if(counter == 0){
-                                goStraightPID(480, 0.01, 0.000138138, 0.005, 2000, 1);//hi
-                            }
-                            splineMovement(0, -0.0621, -0.252, -83, 7);
-
-                            counter++;
-
-                            if(counter == 1 ){
-                                //goStraightPID(-20, 0.01, 0.000138138, 0.005, 2000, 1);
-//                                hw.intake.setPower(-1);
-//                                sleep(1000);
-                              //hw.intake.setPower(0);
-                            }
-                            counter++;
-                            if(counter > 1 ){
-//                                hw.intake.setPower(-1);
-//                                sleep(1000);
-                                hw.intake.setPower(0);}
-                            goStraightPID(-50, 0.01, 0.000138138, 0.005, 2000, 1);
-                            goStraightPID(50, 0.01, 0.000138138, 0.005, 2000, 1);
-                            sleep(30000);}goNext = true;
-                        telemetry.addData("heading: ", heading);
-                        telemetry.update();
-
-                        if(goNext)
-                        {
-                            if(counter == 0){
-                                goStraightPID(340, 0.01, 0.000138138, 0.005, 2000, 1);//hi
-                            }
-                            splineMovement(0, -0.0621, 0.25, -83, 7);
-                            counter++;
-                            if(counter == 1 ){
-//                                hw.intake.setPower(-1);
+//                    case spike:
+//                        //splineMovement(-0.81, -0.061, -0.2562, 88, 7);
+//                        //setLift(-1275, -0.4);
+//                        //outtakeExtend();
+//
+//                        //slidePos = 500;
+//                        goNext = true;
+//                        telemetry.addData("heading: ", heading);
+//                        telemetry.update();
+//
+//                        if(goNext)
+//                        {
+//                            if(counter == 0){
+//                                goStraightPID(480, 0.01, 0.000138138, 0.005, 2000, 1);//hi
+//                            }
+//                            splineMovement(0, -0.0621, -0.252, -83, 7);
+//
+//                            counter++;
+//
+//                            if(counter == 1 ){
+//                                //goStraightPID(-20, 0.01, 0.000138138, 0.005, 2000, 1);
+////                                hw.intake.setPower(-1);
+////                                sleep(1000);
+//                              //hw.intake.setPower(0);
+//                            }
+//                            counter++;
+//                            if(counter > 1 ){
+////                                hw.intake.setPower(-1);
+////                                sleep(1000);
+//                                hw.intake.setPower(0);}
+//                            goStraightPID(-50, 0.01, 0.000138138, 0.005, 2000, 1);
+//                            goStraightPID(50, 0.01, 0.000138138, 0.005, 2000, 1);
+//                            sleep(30000);}goNext = true;
+//                        telemetry.addData("heading: ", heading);
+//                        telemetry.update();
+//
+//                        if(goNext)
+//                        {
+//                            if(counter == 0){
+//                                goStraightPID(340, 0.01, 0.000138138, 0.005, 2000, 1);//hi
+//                            }
+//                            splineMovement(0, -0.0621, 0.25, -83, 7);
+//                            counter++;
+//                            if(counter == 1 ){
+////                                hw.intake.setPower(-1);
+////                                sleep(1000);
+////                                hw.intake.setPower(0);
+//                            }
+//                            if(counter > 1 ){
+//                                sleep(100);                                hw.intake.setPower(-1);
 //                                sleep(1000);
 //                                hw.intake.setPower(0);
-                            }
-                            if(counter > 1 ){
-                                sleep(100);                                hw.intake.setPower(-1);
-                                sleep(1000);
-                                hw.intake.setPower(0);
-                                goStraightPID(-50, 0.01, 0.000138138, 0.005, 2000, 1);
-                                sleep(30000);}}
+//                                goStraightPID(-50, 0.01, 0.000138138, 0.005, 2000, 1);
+//                                sleep(30000);}}
                         /*goNext = true;
                         /*hw.dropper.setPower(0);
                         outtakeRetract();
@@ -367,8 +373,9 @@ public class BlueLeftAuto extends LinearOpMode {
                             hw.intake.setPower(0);
                             stopAll();
                             sleep(30000);
+
                         }*/
-                        break;
+
 
                    /* case park:
                         goNext = false;
@@ -729,9 +736,13 @@ public class BlueLeftAuto extends LinearOpMode {
 
     public void setLift(double target, double pwr)
     {
-        double currPos = getLiftPos();
+        double currPos = hw.lift.getCurrentPosition()-56;
 
         double kP = 1 / (target - slidePos);
+//        telemetry.addData("currPos: ", getLiftPos());
+//        telemetry.addData("SlidePos: ",slidePos    );
+        telemetry.addData("tar: ",Math.abs(target - currPos)     );
+        telemetry.update();
 
         if(Math.abs(target - currPos) > 75)
         {
@@ -751,7 +762,7 @@ public class BlueLeftAuto extends LinearOpMode {
 
     public double getLiftPos()
     {
-        double deltaLift = hw.lift2.getCurrentPosition() - liftStart;
+        double deltaLift = hw.lift2.getCurrentPosition()-liftStart;
         liftPos = deltaLift;
 
         return liftPos;
